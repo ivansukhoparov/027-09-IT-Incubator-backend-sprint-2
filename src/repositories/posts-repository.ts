@@ -5,7 +5,7 @@ import {postCollection} from "../db/db-collections";
 import {postMapper} from "../types/posts/mapper";
 import {BlogsRepository} from "./blogs-repository";
 import {ObjectId, WithId} from "mongodb";
-import {BlogType} from "../types/blogs/output";
+
 
 
 export class PostsRepository {
@@ -17,13 +17,9 @@ export class PostsRepository {
     };
 
     // return one post with given id
-    static async getPostById(id: string): Promise<PostOutputType | null> {
+    static async getPostById(id: string) {
         try {
-            const post: WithId<PostType> | null = await postCollection.findOne({_id: new ObjectId(id)});
-            if (!post) {
-                return null;
-            }
-            return postMapper(post);
+            return await postCollection.findOne({_id: new ObjectId(id)});
         } catch (err) {
             return null;
         }
@@ -49,25 +45,7 @@ export class PostsRepository {
         }
     }
 
-    static async createPostToBlog(blogId: string, createData: CreatePostDto) {
-        const createdAt = new Date();
-        const blog = await BlogsRepository.getBlogById(blogId)
 
-        if (blog) {
-            const newPost: PostType = {
-                title: createData.title,
-                shortDescription: createData.shortDescription,
-                content: createData.content,
-                blogId: blogId,
-                blogName: blog.name,
-                createdAt: createdAt.toISOString()
-            }
-            const result = await postCollection.insertOne(newPost);
-            return result.insertedId.toString();
-        } else {
-            return null
-        }
-    }
 
 
     // update existing post

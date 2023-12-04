@@ -9,7 +9,7 @@ export const createNewId = (descriptor:string) => {
     return ( +(new Date()))*Math.random() + descriptor + counter;
 }
 
-export const mongoUri = process.env.MONGO_URL || "mongodb://0.0.0.0:27017"
+export const mongoUri = process.env.MONGO_URL! //|| "mongodb://0.0.0.0:27017"
 
 export const port:number = 5010;
 

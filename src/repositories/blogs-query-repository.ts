@@ -1,4 +1,4 @@
-import {BlogType, BlogOutputType, BlogViewModelType} from "../types/blogs/output";
+import {BlogType, BlogOutputType} from "../types/blogs/output";
 import {
     CreateBlogDto,
     QueryBlogRequestType,
@@ -10,6 +10,7 @@ import {client} from "../db/db";
 import {ObjectId, WithId} from "mongodb";
 import {blogMapper} from "../types/blogs/mapper";
 import {blogCollection} from "../db/db-collections";
+import {BlogViewModelType} from "../types/view-model";
 
 export class BlogsQueryRepository {
 

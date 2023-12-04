@@ -1,8 +1,9 @@
-import {PostOutputType, PostsViewModelType, PostType} from "../types/posts/output";
+import {PostOutputType, PostType} from "../types/posts/output";
 import {SortPostRepositoryType} from "../types/posts/input";
 import {postCollection} from "../db/db-collections";
 import {postMapper} from "../types/posts/mapper";
 import {ObjectId, WithId} from "mongodb";
+import {PostsViewModelType} from "../types/view-model";
 
 
 export class PostsQueryRepository {

@@ -1,10 +1,4 @@
-export type PostsViewModelType = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: PostOutputType[]
-}
+
 
 export type PostOutputType = {
     id: string

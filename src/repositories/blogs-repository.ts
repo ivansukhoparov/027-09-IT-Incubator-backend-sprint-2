@@ -1,12 +1,8 @@
 import {BlogType, BlogOutputType} from "../types/blogs/output";
 import {CreateBlogDto, UpdateBlogDto} from "../types/blogs/input";
-import {client} from "../db/db";
 import {ObjectId, WithId} from "mongodb";
 import {blogMapper} from "../types/blogs/mapper";
-import {blogCollection, postCollection} from "../db/db-collections";
-import {CreatePostDto} from "../types/posts/input";
-import {PostOutputType, PostType} from "../types/posts/output";
-import {PostsRepository} from "./posts-repository";
+import {blogCollection} from "../db/db-collections";
 
 export class BlogsRepository {
 
@@ -17,42 +13,27 @@ export class BlogsRepository {
     };
 
     // return one blog by id
-    static async getBlogById(id: string): Promise<BlogOutputType | null> {
+    static async getBlogById(id: string){
         try {
-            const blog: WithId<BlogType> | null = await blogCollection.findOne({_id: new ObjectId(id)});
-            if (!blog) {
-                return null;
-            }
-            return blogMapper(blog)
+            return await blogCollection.findOne({_id: new ObjectId(id)});
         } catch (err) {
             return null;
         }
     }
 
     // create new blog
-    static async createBlog(data: CreateBlogDto) {
-        const createdAt = new Date();
-        const newBlog: BlogType = {
-            ...data,
-            createdAt: createdAt.toISOString(),
-            isMembership: false
-        }
+    static async createBlog(newBlog: BlogType) {
         const result = await blogCollection.insertOne(newBlog)
         return result.insertedId.toString();
-
     }
 
     // update existing blog
-    static async updateBlog(id: string, data: UpdateBlogDto) {
+    static async updateBlog(id: string, updateData: UpdateBlogDto) {
 
         const result = await blogCollection.updateOne({_id: new ObjectId(id)},
             {
                 $set:
-                    {
-                        name: data.name,
-                        description: data.description,
-                        websiteUrl: data.websiteUrl
-                    }
+                updateData
             }
         );
 

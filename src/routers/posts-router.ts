@@ -13,6 +13,7 @@ import {CreatePostDto, QueryPostRequestType, SortPostRepositoryType, UpdatePostD
 import {validationPostsChains} from "../middlewares/validators/posts-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {PostsQueryRepository} from "../repositories/posts-query-repository";
+import {PostsService} from "../domains/posts-service";
 
 export const postsRouter = Router();
 
@@ -40,17 +41,17 @@ postsRouter.get("/:id", async (req: RequestWithParams<Params>, res: Response) =>
 })
 
 postsRouter.post('/', basicAuthorizationMiddleware, validationPostsChains(), inputValidationMiddleware, async (req: RequestWithBody<CreatePostDto>, res: Response) => {
-    const creatData = req.body;
-    const postID = await PostsRepository.createPost(creatData);
-    if (postID) {
-        const newPost = await PostsRepository.getPostById(postID);
 
-        if (newPost) {
-            res.status(HTTP_STATUSES.CREATED_201).json(newPost);
-            return
-        }
+    const creatData = req.body;
+    const createdPost = await PostsService.createNewPost(creatData)
+
+    if (!createdPost) {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        return
     }
-    res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+
+    res.status(HTTP_STATUSES.CREATED_201).json(createdPost);
+
 })
 
 postsRouter.put("/:id", basicAuthorizationMiddleware, validationPostsChains(), inputValidationMiddleware, async (req: RequestWithBodyAndParams<Params, UpdatePostDto>, res: Response) => {

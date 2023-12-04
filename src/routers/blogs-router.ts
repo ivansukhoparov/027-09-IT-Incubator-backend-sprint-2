@@ -19,11 +19,12 @@ import {validationBlogsChains} from "../middlewares/validators/blogs-validators"
 import {basicAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {HTTP_STATUSES} from "../utils/comon";
 import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
-import {validationPostsChains, validationPostsChainsNoBlogId} from "../middlewares/validators/posts-validators";
+import {validationPostsChainsNoBlogId} from "../middlewares/validators/posts-validators";
 import {CreatePostDto, QueryPostRequestType, SortPostRepositoryType} from "../types/posts/input";
 import {PostsQueryRepository} from "../repositories/posts-query-repository";
 import {PostsRepository} from "../repositories/posts-repository";
-import {PostOutputType} from "../types/posts/output";
+import {BlogsService} from "../domains/blogs-service";
+import {PostsService} from "../domains/posts-service";
 
 
 export const blogsRouter = Router();
@@ -51,7 +52,7 @@ blogsRouter.get("/", async (req: RequestWithSearchTerms<QueryBlogRequestType>, r
 })
 
 blogsRouter.get("/:id", async (req: RequestWithParams<Params>, res: Response) => {
-    const blog = await BlogsRepository.getBlogById(req.params.id);
+    const blog = await BlogsQueryRepository.getBlogById(req.params.id);
     if (blog) {
         res.status(HTTP_STATUSES.OK_200).json(blog);
         return
@@ -84,8 +85,8 @@ blogsRouter.post('/',
     inputValidationMiddleware,
     async (req: RequestWithBody<CreateBlogDto>, res: Response) => {
         const creatData = req.body;
-        const blogID = await BlogsRepository.createBlog(creatData);
-        const newBlog = await BlogsRepository.getBlogById(blogID);
+
+        const newBlog = await BlogsService.createNewBlog(creatData);
         if (newBlog) {
             res.status(HTTP_STATUSES.CREATED_201).json(newBlog);
             return
@@ -98,15 +99,16 @@ blogsRouter.post("/:id/posts",
     validationPostsChainsNoBlogId(),
     inputValidationMiddleware,
     async (req: RequestWithBodyAndParams<Params, CreatePostDto>, res: Response) => {
+
         const blogId = req.params.id;
         const createData = req.body;
-        const newPostId = await PostsRepository.createPostToBlog(blogId, createData);
 
-        if (!newPostId) {
+        const createdPost = await PostsService.createNewPost(createData,blogId);
+
+        if (!createdPost) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
             return
         }
-        const createdPost = await PostsQueryRepository.getPostById(newPostId);
         res.status(HTTP_STATUSES.CREATED_201).json(createdPost)
     })
 
@@ -116,7 +118,7 @@ blogsRouter.put("/:id",
     inputValidationMiddleware,
     async (req: RequestWithBodyAndParams<Params, UpdateBlogDto>, res: Response) => {
         const updateData = req.body;
-        const isUpdated = await BlogsRepository.updateBlog(req.params.id, updateData);
+        const isUpdated = await BlogsService.updateBlog(req.params.id, updateData);
         if (isUpdated) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
             return

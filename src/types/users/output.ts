@@ -1,10 +1,4 @@
-export type UsersViewModelType = {
-    pagesCount: number
-    page: number
-    pageSize: number
-    totalCount: number
-    items: UserOutputType[]
-}
+
 
 export type UserOutputType = {
     id: string
