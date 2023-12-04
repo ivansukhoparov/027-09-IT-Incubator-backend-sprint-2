@@ -22,7 +22,6 @@ import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
 import {validationPostsChainsNoBlogId} from "../middlewares/validators/posts-validators";
 import {CreatePostDto, QueryPostRequestType, SortPostRepositoryType} from "../types/posts/input";
 import {PostsQueryRepository} from "../repositories/posts-query-repository";
-import {PostsRepository} from "../repositories/posts-repository";
 import {BlogsService} from "../domains/blogs-service";
 import {PostsService} from "../domains/posts-service";
 

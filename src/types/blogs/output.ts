@@ -1,6 +1,4 @@
-
-
-export type BlogOutputType ={
+export type BlogOutputType = {
     id: string
     name: string
     description: string
@@ -9,7 +7,7 @@ export type BlogOutputType ={
     isMembership: boolean
 }
 
-export type BlogType ={
+export type BlogType = {
     name: string
     description: string
     websiteUrl: string

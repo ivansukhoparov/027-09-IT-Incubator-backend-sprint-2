@@ -1,10 +1,5 @@
 import {BlogType, BlogOutputType} from "../types/blogs/output";
-import {
-    CreateBlogDto,
-    QueryBlogRequestType,
-    SearchBlogRepositoryType,
-    SortBlogRepositoryType,
-} from "../types/blogs/input";
+import {SearchBlogRepositoryType, SortBlogRepositoryType,} from "../types/blogs/input";
 import {ObjectId, WithId} from "mongodb";
 import {blogMapper} from "../types/blogs/mapper";
 import {blogCollection} from "../db/db-collections";
@@ -18,7 +13,7 @@ export class BlogsQueryRepository {
         let sortDirection: number;
 
         // check if have searchNameTerm create search key
-        if (searchData.searchNameTerm) searchKey = {name: {$regex: searchData.searchNameTerm,$options:"i"}};
+        if (searchData.searchNameTerm) searchKey = {name: {$regex: searchData.searchNameTerm, $options: "i"}};
 
         // calculate limits for DB request
         const documentsTotalCount = await blogCollection.countDocuments(searchKey); // Receive total count of blogs
@@ -49,13 +44,13 @@ export class BlogsQueryRepository {
     }
 
     static async getBlogById(id: string): Promise<BlogOutputType | null> {
-        try{
+        try {
             const blog: WithId<BlogType> | null = await blogCollection.findOne({_id: new ObjectId(id)});
             if (!blog) {
                 return null;
             }
             return blogMapper(blog)
-        }catch (err){
+        } catch (err) {
             return null;
         }
     }

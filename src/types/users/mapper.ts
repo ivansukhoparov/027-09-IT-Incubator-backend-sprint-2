@@ -1,6 +1,5 @@
 import {WithId} from "mongodb";
 import {UserOutputType, UserType} from "./output";
-import useRealTimers = jest.useRealTimers;
 
 export const userMapper = (user: WithId<UserType>): UserOutputType => {
     return {

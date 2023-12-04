@@ -1,5 +1,5 @@
-import {BlogType, BlogOutputType} from "../types/blogs/output";
-import {CreateBlogDto, UpdateBlogDto} from "../types/blogs/input";
+import {BlogType} from "../types/blogs/output";
+import {UpdateBlogDto} from "../types/blogs/input";
 import {ObjectId, WithId} from "mongodb";
 import {blogMapper} from "../types/blogs/mapper";
 import {blogCollection} from "../db/db-collections";
@@ -13,7 +13,7 @@ export class BlogsRepository {
     };
 
     // return one blog by id
-    static async getBlogById(id: string){
+    static async getBlogById(id: string) {
         try {
             return await blogCollection.findOne({_id: new ObjectId(id)});
         } catch (err) {

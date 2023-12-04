@@ -1,4 +1,3 @@
-import {CreatePostDto} from "../types/posts/input";
 import {BlogsRepository} from "../repositories/blogs-repository";
 import {PostType} from "../types/posts/output";
 import {PostsRepository} from "../repositories/posts-repository";

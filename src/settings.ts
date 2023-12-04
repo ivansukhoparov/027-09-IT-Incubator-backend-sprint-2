@@ -1,4 +1,4 @@
-import express, {Request,Response} from "express";
+import express from "express";
 import {videosRouter} from "./routers/videos-router";
 import {testingRouter} from "./routers/testing-router";
 import {blogsRouter} from "./routers/blogs-router";

@@ -1,14 +1,9 @@
 import {CreateBlogDto, UpdateBlogDto} from "../types/blogs/input";
 import {BlogType} from "../types/blogs/output";
 import {BlogsRepository} from "../repositories/blogs-repository";
-import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
 import {WithId} from "mongodb";
 import {blogMapper} from "../types/blogs/mapper";
-import {CreatePostDto} from "../types/posts/input";
-import {PostType} from "../types/posts/output";
-import {postCollection} from "../db/db-collections";
-import {PostsRepository} from "../repositories/posts-repository";
-import {postMapper} from "../types/posts/mapper";
+
 
 
 export class BlogsService {

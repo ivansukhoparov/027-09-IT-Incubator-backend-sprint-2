@@ -1,5 +1,3 @@
-
-
 export type PostOutputType = {
     id: string
     title: string
