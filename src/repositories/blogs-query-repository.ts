@@ -4,17 +4,15 @@ import {
     QueryBlogRequestType,
     SearchBlogRepositoryType,
     SortBlogRepositoryType,
-    UpdateBlogDto
 } from "../types/blogs/input";
-import {client} from "../db/db";
 import {ObjectId, WithId} from "mongodb";
 import {blogMapper} from "../types/blogs/mapper";
 import {blogCollection} from "../db/db-collections";
-import {BlogViewModelType} from "../types/view-model";
+import {ViewModelType} from "../types/view-model";
 
 export class BlogsQueryRepository {
 
-    static async getAllBlogs(sortData: SortBlogRepositoryType, searchData: SearchBlogRepositoryType): Promise<BlogViewModelType> {
+    static async getAllBlogs(sortData: SortBlogRepositoryType, searchData: SearchBlogRepositoryType): Promise<ViewModelType<BlogOutputType>> {
         let searchKey = {};
         let sortKey = {};
         let sortDirection: number;

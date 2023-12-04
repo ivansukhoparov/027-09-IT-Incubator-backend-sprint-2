@@ -3,13 +3,13 @@ import {SortPostRepositoryType} from "../types/posts/input";
 import {postCollection} from "../db/db-collections";
 import {postMapper} from "../types/posts/mapper";
 import {ObjectId, WithId} from "mongodb";
-import {PostsViewModelType} from "../types/view-model";
+import {ViewModelType} from "../types/view-model";
 
 
 export class PostsQueryRepository {
 
     // return all posts from database
-    static async getAllPosts(sortData: SortPostRepositoryType, blogId?: string): Promise<PostsViewModelType> {
+    static async getAllPosts(sortData: SortPostRepositoryType, blogId?: string): Promise<ViewModelType<PostOutputType>> {
         let searchKey = {}
         let sortKey = {};
         let sortDirection: number;
