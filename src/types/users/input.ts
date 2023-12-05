@@ -19,6 +19,6 @@ export type SortUsersRepositoryType = {
     pageSize: number
 }
 export type SearchUsersRepositoryType = {
-    searchNameTerm: string | null
+    searchLoginTerm: string | null
     searchEmailTerm: string | null
 }
