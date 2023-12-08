@@ -1,12 +1,14 @@
-import {Router, Request, Response} from "express";
+import {Response, Router} from "express";
 import {RequestWithBody} from "../types/common";
 import {AuthType} from "../types/login/input";
 import {LoginService} from "../domains/login-service";
 import {HTTP_STATUSES} from "../utils/comon";
+import {loginValidationChain} from "../middlewares/validators/login-validators";
+import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 
 export const loginRouter=Router();
 
-loginRouter.post("/", async (req:RequestWithBody<AuthType>,res:Response)=>{
+loginRouter.post("/", loginValidationChain(), inputValidationMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
     const authData:AuthType = {
         loginOrEmail:req.body.loginOrEmail,
         password:req.body.password
