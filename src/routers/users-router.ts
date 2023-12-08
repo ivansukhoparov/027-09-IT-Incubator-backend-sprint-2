@@ -50,7 +50,7 @@ usersRouter.post("/", basicAuthorizationMiddleware, usersValidationChain(),input
     res.status(HTTP_STATUSES.CREATED_201).json(createdUser);
 })
 
-usersRouter.delete("/:id", async (req: RequestWithParams<Params>, res: Response) => {
+usersRouter.delete("/:id",basicAuthorizationMiddleware, async (req: RequestWithParams<Params>, res: Response) => {
     const isDeleted = await UsersRepository.deleteUser(req.params.id);
     if (!isDeleted) res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
     else res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
