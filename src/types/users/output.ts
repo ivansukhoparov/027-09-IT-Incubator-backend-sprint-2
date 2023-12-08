@@ -8,7 +8,6 @@ export type UserOutputType = {
 export type UserType = {
     login: string
     email: string
-    salt: string
     hash: string
     createdAt: string
 }

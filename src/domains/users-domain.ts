@@ -1,20 +1,17 @@
 import {CreateUserType} from "../types/users/input";
 import {UserOutputType, UserType} from "../types/users/output";
 import {UsersRepository} from "../repositories/users-repository";
-
+import bcrypt from "bcrypt";
 
 
 export class UsersDomain {
-    static async createUser(createData: CreateUserType):Promise<UserOutputType|null> {
+    static async createUser(createData: CreateUserType): Promise<UserOutputType | null> {
         const createdAt = new Date().toISOString();
-        const salt = "va3df3";
-
-        const hash = await this._createHash(createData.password, salt);
+        const hash = await bcrypt.hash(createData.password, 10);
 
         const newUser: UserType = {
             login: createData.login,
             email: createData.email,
-            salt: salt,
             hash: hash,
             createdAt: createdAt
         }
@@ -26,9 +23,5 @@ export class UsersDomain {
         if (!createdUser) return null;
 
         return createdUser;
-    }
-
-    static async _createHash(password: string, salt: string) {
-        return password + salt;
     }
 }
