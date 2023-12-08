@@ -11,7 +11,12 @@ class createUserData {
             login: "login",
             email: "qwe123@gmail.com",
             password: "qwerty"
-        }
+        },
+        response:{     pagesCount: 0,
+            page: 1,
+            pageSize: 10,
+            totalCount: 0,
+            items: []}
     };
 
     static overLength = {
@@ -69,14 +74,18 @@ class createUserData {
 
 }
 
-const emptyBody = {
-    pagesCount: 0,
-    page: 1,
-    pageSize: 10,
-    totalCount: 0,
-    items: []
+class ViewModelResponse{
+    static emptyBody = {
+        pagesCount: 0,
+        page: 1,
+        pageSize: 10,
+        totalCount: 0,
+        items: []
+    }
 
 }
+
+
 
 describe(routerName, () => {
     beforeAll(async () => {
@@ -85,7 +94,7 @@ describe(routerName, () => {
 
     it("- should return empty model view after delete all", async () => {
         await request(app).get(routerName)
-            .expect(HTTP_STATUSES.OK_200, emptyBody);
+            .expect(HTTP_STATUSES.OK_200, ViewModelResponse.emptyBody);
     })
 
     it(" - POST doesn't create new user with invalid authorization", async () => {
@@ -118,11 +127,18 @@ describe(routerName, () => {
             .send(createUserData.lessRequireLength.data)
             .expect(HTTP_STATUSES.BAD_REQUEST_400, createUserData.lessRequireLength.errors)
     })
-    it(" - POST doesn't create new user with ivalid email", async () => {
+    it(" - POST doesn't create new user with invalid email", async () => {
         await request(app).post(routerName).auth("admin", "qwerty")
             .send(createUserData.invalidEmail.data)
             .expect(HTTP_STATUSES.BAD_REQUEST_400, createUserData.invalidEmail.errors)
     })
+    it(" - POST should create user with valid data and return created user", async () => {
+        await request(app).post(routerName).auth("admin", "qwerty")
+            .send(createUserData.valid.data)
+            .expect(HTTP_STATUSES.OK_200)
+    })
+
+
 
 
 })
