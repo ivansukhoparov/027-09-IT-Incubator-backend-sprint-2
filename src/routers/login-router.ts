@@ -6,7 +6,7 @@ import {HTTP_STATUSES} from "../utils/comon";
 
 export const loginRouter=Router();
 
-loginRouter.get("/", async (req:RequestWithBody<AuthType>,res:Response)=>{
+loginRouter.post("/", async (req:RequestWithBody<AuthType>,res:Response)=>{
     const authData:AuthType = {
         loginOrEmail:req.body.loginOrEmail,
         password:req.body.password
