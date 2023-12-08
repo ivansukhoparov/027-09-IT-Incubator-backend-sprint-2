@@ -1,6 +1,7 @@
 import request from "supertest"
 import {app} from "../../src/settings";
 import {HTTP_STATUSES} from "../../src/utils/comon";
+import {UserOutputType} from "../../src/types/users/output";
 
 const routerName = "/users/";
 
@@ -85,7 +86,7 @@ class ViewModelResponse{
 
 }
 
-
+let user: UserOutputType
 
 describe(routerName, () => {
     beforeAll(async () => {
@@ -132,9 +133,10 @@ describe(routerName, () => {
             .expect(HTTP_STATUSES.BAD_REQUEST_400, createUserData.invalidEmail.errors);
     })
     it(" - POST should create user with valid data and return created user", async () => {
-        await request(app).post(routerName).auth("admin", "qwerty")
+        const res = await request(app).post(routerName).auth("admin", "qwerty")
             .send(createUserData.valid.data)
-            .expect(HTTP_STATUSES.OK_200);
+            .expect(HTTP_STATUSES.CREATED_201);
+        user = res.body
     })
 
     it(" - GET should return all user ", async () => {
@@ -142,7 +144,37 @@ describe(routerName, () => {
             .expect(HTTP_STATUSES.OK_200);
     })
 
+    it('- DELETE doesnt delete user with invalid id', async () => {
+        await request(app).delete(routerName + "-150").auth("admin", "qwerty").expect(HTTP_STATUSES.NOT_FOUND_404)
+        const allUsers = await request(app).get(routerName).expect(HTTP_STATUSES.OK_200);
+        expect(allUsers.body.items.length).toBe(1);
+    });
 
+    it('- DELETE doesnt delete user with invalid auth', async () => {
+        await request(app).delete(routerName +user.id).auth("Odmin", "qwerty").expect(HTTP_STATUSES.UNAUTHORIZED_401)
+        const allUsers = await request(app).get(routerName).expect(HTTP_STATUSES.OK_200);
+        expect(allUsers.body.items.length).toBe(1);
+    });
+
+    it ("should be auth with valid login and password", async ()=>{
+        await request(app).post("/auth/login").send({
+            "loginOrEmail":"login",
+            "password":"qwerty"
+        }).expect(HTTP_STATUSES.NO_CONTENT_204)
+    })
+
+    it ("doesn't auth with invalid login and password", async ()=>{
+        await request(app).post("/auth/login").send({
+            "loginOrEmail":"logisn",
+            "password":"qwertsy"
+        }).expect(HTTP_STATUSES.UNAUTHORIZED_401)
+    })
+
+    it('- DELETE should delete user by id', async () => {
+        await request(app).delete(routerName +user.id).auth("admin", "qwerty").expect(HTTP_STATUSES.NO_CONTENT_204)
+        const allUsers = await request(app).get(routerName).expect(HTTP_STATUSES.OK_200);
+        expect(allUsers.body.items.length).toBe(0);
+    });
 })
 
 
