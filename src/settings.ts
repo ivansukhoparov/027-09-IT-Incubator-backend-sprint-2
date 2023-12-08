@@ -4,7 +4,7 @@ import {testingRouter} from "./routers/testing-router";
 import {blogsRouter} from "./routers/blogs-router";
 import {postsRouter} from "./routers/posts-router";
 import bodyParser from "body-parser";
-import {loginRouter} from "./routers/login-router";
+import {authRouter} from "./routers/auth-router";
 import {usersRouter} from "./routers/users-router";
 
 export const app = express();
@@ -17,4 +17,4 @@ app.use("/videos", videosRouter);
 app.use("/blogs", blogsRouter);
 app.use("/posts", postsRouter);
 app.use("/users", usersRouter);
-app.use("/login", loginRouter);
+app.use("/auth", authRouter);
