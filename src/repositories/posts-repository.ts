@@ -1,11 +1,9 @@
-
 import {PostOutputType, PostType} from "../types/posts/output";
 import {CreatePostDto, UpdatePostDto} from "../types/posts/input";
 import {postCollection} from "../db/db-collections";
 import {postMapper} from "../types/posts/mapper";
 import {BlogsRepository} from "./blogs-repository";
 import {ObjectId, WithId} from "mongodb";
-
 
 
 export class PostsRepository {

@@ -1,5 +1,4 @@
 import {body} from "express-validator";
-import {BlogsRepository} from "../../repositories/blogs-repository";
 import {BlogsQueryRepository} from "../../repositories/blogs-query-repository";
 
 

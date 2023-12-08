@@ -1,4 +1,4 @@
-import {UserAuthOutputType, UserOutputType, UserType} from "../types/users/output";
+import {UserAuthOutputType} from "../types/users/output";
 import {UsersRepository} from "../repositories/users-repository";
 import bcrypt from "bcrypt";
 
