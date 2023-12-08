@@ -5,6 +5,14 @@ export type UserOutputType = {
     createdAt: string
 }
 
+export type UserAuthOutputType = {
+    id: string
+    login: string
+    email: string
+    createdAt: string
+    hash: string
+}
+
 export type UserType = {
     login: string
     email: string
