@@ -1,10 +1,7 @@
-import {CreateUserType} from "../types/users/input";
 import {UserOutputType, UserType} from "../types/users/output";
-import {usersRouter} from "../routers/users-router";
 import {usersCollection} from "../db/db-collections";
 import {ObjectId} from "mongodb";
 import {userMapper, userMapperWithPassword} from "../types/users/mapper";
-import {UsersDomain} from "../domains/users-domain";
 
 
 export class UsersRepository {
@@ -40,6 +37,15 @@ export class UsersRepository {
             return result.insertedId.toString();
         } catch (err) {
             return null
+        }
+    }
+
+    static async deleteUser(id: string) {
+        try {
+            const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
+            return result.deletedCount === 1
+        } catch (err) {
+            return false
         }
     }
 }

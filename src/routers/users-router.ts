@@ -1,12 +1,11 @@
-import {Router, Request, Response} from "express";
-import {RequestWithBody, RequestWithSearchTerms} from "../types/common";
+import {Response, Router} from "express";
+import {Params, RequestWithBody, RequestWithParams, RequestWithSearchTerms} from "../types/common";
 import {
     CreateUserType,
     QueryUsersRequestType,
     SearchUsersRepositoryType,
     SortUsersRepositoryType
 } from "../types/users/input";
-import {CreateBlogDto, SearchBlogRepositoryType, SortBlogRepositoryType} from "../types/blogs/input";
 import {UsersQueryRepository} from "../repositories/users-query-repository";
 import {UserOutputType} from "../types/users/output";
 import {UsersDomain} from "../domains/users-domain";
@@ -14,6 +13,7 @@ import {HTTP_STATUSES} from "../utils/comon";
 import {basicAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {usersValidationChain} from "../middlewares/validators/users-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
+import {UsersRepository} from "../repositories/users-repository";
 
 export const usersRouter = Router();
 
@@ -50,4 +50,8 @@ usersRouter.post("/", basicAuthorizationMiddleware, usersValidationChain(),input
     res.status(HTTP_STATUSES.CREATED_201).json(createdUser);
 })
 
-
+usersRouter.delete("/:id", async (req: RequestWithParams<Params>, res: Response) => {
+    const isDeleted = await UsersRepository.deleteUser(req.params.id);
+    if (!isDeleted) res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+    else res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
