@@ -47,7 +47,7 @@ usersRouter.post("/", basicAuthorizationMiddleware, usersValidationChain(),input
         res.status(HTTP_STATUSES.BAD_REQUEST_400);
         return
     }
-    res.status(HTTP_STATUSES.OK_200).json(createdUser);
+    res.status(HTTP_STATUSES.CREATED_201).json(createdUser);
 })
 
 
