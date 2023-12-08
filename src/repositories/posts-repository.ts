@@ -1,4 +1,4 @@
-import {createNewId} from "../utils/comon";
+
 import {PostOutputType, PostType} from "../types/posts/output";
 import {CreatePostDto, UpdatePostDto} from "../types/posts/input";
 import {postCollection} from "../db/db-collections";

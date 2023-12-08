@@ -2,6 +2,7 @@ import {BlogsRepository} from "../repositories/blogs-repository";
 import {PostType} from "../types/posts/output";
 import {PostsRepository} from "../repositories/posts-repository";
 import {postMapper} from "../types/posts/mapper";
+import {CreatePostDto} from "../types/posts/input";
 
 export class PostsService {
     static async createNewPost(createData: CreatePostDto, id?: string,) {
