@@ -11,14 +11,19 @@ import {userMapper} from "../types/users/mapper";
 export class UsersQueryRepository{
 
     static async getAllUsers(sortData:SortUsersRepositoryType, searchData:SearchUsersRepositoryType){
-        let searchKeyLogin  , searchKeyEmail ={}
-        let sortKey = {};
+        let searchKeysArray=[];
+        let sortKey, searchKey = {};
         let sortDirection: number;
 
         // check if have searchNameTerm create search key
-        if (searchData.searchLoginTerm) searchKeyLogin = {name: {$regex: searchData.searchLoginTerm, $options: "i"}};
-        if (searchData.searchEmailTerm) searchKeyEmail = {name: {$regex: searchData.searchEmailTerm, $options: "i"}};
-        const searchKey = {$or:[searchKeyLogin,searchKeyEmail]}
+        if (searchData.searchLoginTerm) searchKeysArray.push({login: {$regex: searchData.searchLoginTerm, $options: "i"}});
+        if (searchData.searchEmailTerm) searchKeysArray.push({email: {$regex: searchData.searchEmailTerm, $options: "i"}});
+
+        if (searchKeysArray.length===1){
+            searchKey=searchKeysArray[0];
+        }else if (searchKeysArray.length>1){
+            searchKey={$or: searchKeysArray};
+        }
 
         // calculate limits for DB request
         const documentsTotalCount = await usersCollection.countDocuments(searchKey); // Receive total count of blogs
