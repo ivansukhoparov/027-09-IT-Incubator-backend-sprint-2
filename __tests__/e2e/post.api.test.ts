@@ -1,7 +1,7 @@
-//import request from 'supertest';
+
 import request = require("supertest");
 import {app} from "../../src/settings";
-import {PostOutputType} from "../../src/types/posts/output";
+
 
 
 const routerName = "/posts/";
