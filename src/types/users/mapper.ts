@@ -16,6 +16,7 @@ export const userMapperWithPassword = (user: WithId<UserType>): UserAuthOutputTy
         login: user.login,
         email: user.email,
         createdAt: user.createdAt,
-        hash:user.hash
+        hash:user.hash,
+        deleted: user.deleted
     }
 }

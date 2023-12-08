@@ -9,7 +9,7 @@ export class UsersRepository {
     static async getUserById(id: string): Promise<UserOutputType | null> {
         try {
             const user = await usersCollection.findOne({_id: new ObjectId(id)});
-            if (!user) return null;
+            if (!user || user.deleted) return null;
             return userMapper(user);
         } catch (err) {
             return null;
@@ -19,7 +19,10 @@ export class UsersRepository {
     static async getUserByLoginOrEmail(loginOrEmail: string) {
         try {
             const searchKey = {
-                $or: [{login: loginOrEmail}, {email: loginOrEmail}]
+                $and: [
+                    {deleted: false},
+                    {$or: [{login: loginOrEmail}, {email: loginOrEmail}]}
+                ]
             };
             const user = await usersCollection.findOne(searchKey);
             if (!user) return null;
@@ -40,10 +43,26 @@ export class UsersRepository {
         }
     }
 
+    /*
+      this old version really delete user from DB
     static async deleteUser(id: string) {
-        try {
+           try {
             const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
             return result.deletedCount === 1
+        } catch (err) {
+            return false
+        }
+    }
+    */
+
+    static async deleteUser(id: string) {
+        try {
+            const result = await usersCollection.updateOne(
+                {_id: new ObjectId(id)},
+                {$set: {deleted: true}}
+            );
+
+            return result.matchedCount === 1;
         } catch (err) {
             return false
         }

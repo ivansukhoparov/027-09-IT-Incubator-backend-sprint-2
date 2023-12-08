@@ -11,6 +11,7 @@ export type UserAuthOutputType = {
     email: string
     createdAt: string
     hash: string
+    deleted: boolean
 }
 
 export type UserType = {
@@ -18,4 +19,5 @@ export type UserType = {
     email: string
     hash: string
     createdAt: string
+    deleted: boolean
 }

@@ -8,12 +8,13 @@ import {userMapper} from "../types/users/mapper";
 export class UsersQueryRepository {
 
     static async getAllUsers(sortData: SortUsersRepositoryType, searchData: SearchUsersRepositoryType) {
-        let searchKeysArray = [];
+
         let sortKey = {};
         let searchKey = {};
         let sortDirection: number;
 
-        // check have searchNameTerm create search key
+        // check have search terms create search keys array
+        let searchKeysArray:Object[] = [{deleted:false}];
         if (searchData.searchLoginTerm) searchKeysArray.push({login: {$regex: searchData.searchLoginTerm, $options: "i"}});
         if (searchData.searchEmailTerm) searchKeysArray.push({email: {$regex: searchData.searchEmailTerm, $options: "i"}});
 

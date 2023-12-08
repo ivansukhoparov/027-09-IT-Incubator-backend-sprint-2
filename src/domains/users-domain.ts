@@ -13,7 +13,8 @@ export class UsersDomain {
             login: createData.login,
             email: createData.email,
             hash: hash,
-            createdAt: createdAt
+            createdAt: createdAt,
+            deleted:false
         }
 
         const newUserId = await UsersRepository.createUser(newUser);
