@@ -11,6 +11,9 @@ import {UsersQueryRepository} from "../repositories/users-query-repository";
 import {UserOutputType} from "../types/users/output";
 import {UsersDomain} from "../domains/users-domain";
 import {HTTP_STATUSES} from "../utils/comon";
+import {basicAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {usersValidationChain} from "../middlewares/validators/users-validators";
+import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 
 export const usersRouter = Router();
 
@@ -33,7 +36,7 @@ usersRouter.get("/", async (req: RequestWithSearchTerms<QueryUsersRequestType>, 
     res.json(users)
 })
 
-usersRouter.post("/", async (req:RequestWithBody<CreateUserType>, res:Response)=>{
+usersRouter.post("/", basicAuthorizationMiddleware, usersValidationChain(),inputValidationMiddleware,  async (req:RequestWithBody<CreateUserType>, res:Response)=>{
     const createData: CreateUserType = {
         login: req.body.login,
         email: req.body.email,
