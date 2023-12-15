@@ -157,10 +157,13 @@ describe(routerName, () => {
     });
 
     it ("should be auth with valid login and password", async ()=>{
-        await request(app).post("/auth/login").send({
+        const res = await request(app).post("/auth/login").send({
             "loginOrEmail":"login",
             "password":"qwerty"
-        }).expect(HTTP_STATUSES.NO_CONTENT_204)
+        }).expect(HTTP_STATUSES.OK_200);
+        expect(res.body).toEqual({
+            "accessToken": res.body.accessToken
+        })
     })
 
     it ("doesn't auth with invalid login and password", async ()=>{

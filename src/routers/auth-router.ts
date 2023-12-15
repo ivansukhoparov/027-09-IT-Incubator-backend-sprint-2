@@ -6,6 +6,7 @@ import {HTTP_STATUSES} from "../utils/comon";
 import {loginValidationChain} from "../middlewares/validators/auth-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 
+
 export const authRouter=Router();
 
 authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
@@ -13,8 +14,12 @@ authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, asy
         loginOrEmail:req.body.loginOrEmail,
         password:req.body.password
     }
-    const isSuccessful= await AuthService.authUser(authData.loginOrEmail,authData.password);
+    const accessToken= await AuthService.authUser(authData.loginOrEmail,authData.password);
 
-    if (!isSuccessful) res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-    else res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+    if (!accessToken) {
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+        return
+    }
+
+    res.status(HTTP_STATUSES.OK_200).json(accessToken);
 })
