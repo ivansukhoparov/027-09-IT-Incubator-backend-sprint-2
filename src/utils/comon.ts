@@ -6,7 +6,7 @@ let counter = 0
 
 export const mongoUri = process.env.MONGO_URL! //|| "mongodb://0.0.0.0:27017"
 
-export const port: number = 5010;
+export const port: number = 5001;
 
 export const HTTP_STATUSES = {
     OK_200: 200,
