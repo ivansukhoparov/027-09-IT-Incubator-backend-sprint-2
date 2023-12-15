@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import {authRouter} from "./routers/auth-router";
 import {usersRouter} from "./routers/users-router";
 import {commentsCollection} from "./db/db-collections";
+import {commentsRouter} from "./routers/comments-router";
 
 export const app = express();
 

@@ -14,6 +14,7 @@ import {validationPostsChains} from "../middlewares/validators/posts-validators"
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {PostsQueryRepository} from "../repositories/posts-query-repository";
 import {PostsService} from "../domains/posts-service";
+import request from "supertest";
 
 export const postsRouter = Router();
 
@@ -68,4 +69,8 @@ postsRouter.delete("/:id", basicAuthorizationMiddleware, async (req: RequestWith
     const isDeleted = await PostsRepository.deletePost(req.params.id);
     if (isDeleted) res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     else res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+})
+
+postsRouter.post("/:id/comments", async (req:RequestWithBodyAndParams<Params, Body>, res:Response)=>{
+
 })
