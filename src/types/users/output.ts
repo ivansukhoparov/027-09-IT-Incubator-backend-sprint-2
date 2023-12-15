@@ -21,3 +21,9 @@ export type UserType = {
     createdAt: string
     deleted: boolean
 }
+
+export type UserOutputMeType = {
+    email: string
+    login: string
+    userId: string
+}
