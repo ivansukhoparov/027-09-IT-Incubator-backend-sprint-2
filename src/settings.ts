@@ -12,7 +12,7 @@ import {commentsRouter} from "./routers/comments-router";
 export const app = express();
 
 app.use(express.json());
-app.use(bodyParser());
+
 app.use("/testing", testingRouter);
 
 app.use("/videos", videosRouter);

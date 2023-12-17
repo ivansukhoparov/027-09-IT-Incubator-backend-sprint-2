@@ -16,7 +16,7 @@ export class AuthService {
         const isSuccess = await bcrypt.compare(password, user.hash);
         if (!isSuccess) return null;
 
-        const token = jwt.sign({userId: user.id}, secretKey, {expiresIn: "1h"});
+        const token = jwt.sign({userId: user.id}, secretKey, {expiresIn: "1d"});
 
         return {accessToken: token}
     }
