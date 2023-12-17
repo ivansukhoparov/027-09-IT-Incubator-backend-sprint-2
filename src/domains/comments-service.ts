@@ -1,21 +1,29 @@
-import {compareSync} from "bcrypt";
 import {CommentType} from "../types/comments/output";
-import {UsersQueryRepository} from "../repositories/users-query-repository";
-import {UsersRepository} from "../repositories/users-repository";
+import {CreateCommentDataType} from "../types/comments/input";
+import {CommentsRepository} from "../repositories/comments-repository";
+import {CommentsQueryRepository} from "../repositories/comments-query-repository";
 
 export class CommentsService{
 
-    static async createComment(postId:string, content:string){
+    static async createComment(createData: CreateCommentDataType) {
+        const createdAt = new Date();
 
-        const user = UsersRepository.getUserById("id")
         const newComment:CommentType={
-            content:content,
-            postId:postId,
+            content: createData.content,
+            postId: createData.postId,
             commentatorInfo:{
-                userId:"id",
-                userLogin:"login"
+                userId: createData.userId,
+                userLogin: createData.userLogin
             },
-            createdAt:"data"
+            createdAt: createdAt.toISOString()
         }
+
+        const commentId = await CommentsRepository.addNewComment(newComment);
+        if (!commentId) return null;
+
+        const createdComment = await CommentsQueryRepository.getCommentById(commentId);
+        if (!createdComment) return null;
+
+        return createdComment;
     }
 }

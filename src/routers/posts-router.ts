@@ -1,4 +1,4 @@
-import {Router, Request, Response} from "express";
+import {Response, Router} from "express";
 import {
     Params,
     RequestWithBody,
@@ -6,7 +6,7 @@ import {
     RequestWithParams,
     RequestWithSearchTerms
 } from "../types/common";
-import {basicAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {basicAuthorizationMiddleware, bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {HTTP_STATUSES} from "../utils/comon";
 import {PostsRepository} from "../repositories/posts-repository";
 import {CreatePostDto, QueryPostRequestType, SortPostRepositoryType, UpdatePostDto} from "../types/posts/input";
@@ -14,7 +14,8 @@ import {validationPostsChains} from "../middlewares/validators/posts-validators"
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {PostsQueryRepository} from "../repositories/posts-query-repository";
 import {PostsService} from "../domains/posts-service";
-import request from "supertest";
+import {CreateCommentDataType, CreateCommentDto} from "../types/comments/input";
+import {CommentsService} from "../domains/comments-service";
 
 export const postsRouter = Router();
 
@@ -55,6 +56,21 @@ postsRouter.post('/', basicAuthorizationMiddleware, validationPostsChains(), inp
 
 })
 
+postsRouter.post("/:id/comments", bearerAuthorizationMiddleware, async (req: RequestWithBodyAndParams<Params, CreateCommentDto>, res: Response) => {
+    const createCommentData: CreateCommentDataType = {
+        content: req.body.content,
+        userId: req.user.id,
+        userLogin: req.user.login,
+        postId: req.params.id
+    };
+    const comment = await CommentsService.createComment(createCommentData);
+    if (!comment) {
+        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+        return;
+    }
+    res.status(HTTP_STATUSES.OK_200).json(comment);
+})
+
 postsRouter.put("/:id", basicAuthorizationMiddleware, validationPostsChains(), inputValidationMiddleware, async (req: RequestWithBodyAndParams<Params, UpdatePostDto>, res: Response) => {
     const updateData = req.body;
     const isUpdated = await PostsRepository.updatePost(req.params.id, updateData);
@@ -71,6 +87,4 @@ postsRouter.delete("/:id", basicAuthorizationMiddleware, async (req: RequestWith
     else res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
 })
 
-postsRouter.post("/:id/comments", async (req:RequestWithBodyAndParams<Params, Body>, res:Response)=>{
 
-})
