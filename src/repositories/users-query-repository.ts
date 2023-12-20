@@ -14,13 +14,15 @@ export class UsersQueryRepository {
         let sortDirection: number;
 
         // check have search terms create search keys array
-        let searchKeysArray:Object[] = [{deleted:false}];
+        let searchKeysArray:Object[] = [];
         if (searchData.searchLoginTerm) searchKeysArray.push({login: {$regex: searchData.searchLoginTerm, $options: "i"}});
         if (searchData.searchEmailTerm) searchKeysArray.push({email: {$regex: searchData.searchEmailTerm, $options: "i"}});
 
-        if (searchKeysArray.length === 1) {
-            searchKey = searchKeysArray[0];
-        } else if (searchKeysArray.length > 1) {
+        if (searchKeysArray.length === 0) {
+            searchKey = {};
+        } else if (searchKeysArray.length === 1) {
+            searchKey = searchKeysArray;
+        }else if (searchKeysArray.length > 1) {
             searchKey = {$or: searchKeysArray};
         }
         // calculate limits for DB request
