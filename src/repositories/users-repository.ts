@@ -57,12 +57,8 @@ export class UsersRepository {
 
     static async deleteUser(id: string) {
         try {
-            const result = await usersCollection.updateOne(
-                {_id: new ObjectId(id)},
-                {$set: {deleted: true}}
-            );
-
-            return result.matchedCount === 1;
+            const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
+            return result.deletedCount === 1;
         } catch (err) {
             return false
         }
