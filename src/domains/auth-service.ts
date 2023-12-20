@@ -7,7 +7,8 @@ import {AuthOutputType} from "../types/auth/otput";
 import {runDB} from "../db/db";
 
 dotenv.config();
-const secretKey = process.env.SECRET_KEY!
+debugger;
+const secretKey = "qwerty"
 export class AuthService {
     static async authUser(loginOrEmail: string, password: string): Promise<AuthOutputType | null> {
         const user:UserAuthOutputType|null = await UsersRepository.getUserByLoginOrEmail(loginOrEmail);
