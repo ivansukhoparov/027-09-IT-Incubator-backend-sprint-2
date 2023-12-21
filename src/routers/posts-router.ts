@@ -40,8 +40,8 @@ postsRouter.get("/:id/comments", validatePost, async (req: RequestWithSearchTerm
     const sortData: SortCommentsType = {
         sortBy: req.query.sortBy || "createdAt",
         sortDirection: req.query.sortDirection === "asc" ? 1 : -1,
-        pageNumber: req.query.pageNumber || 1,
-        pageSize: req.query.pageSize || 10
+        pageNumber: +req.query.pageNumber || 1,
+        pageSize: +req.query.pageSize || 10
     }
     const comments = await CommentsQueryRepository.getAllCommentsByPostId(sortData,req.params.id);
     if (!comments){
