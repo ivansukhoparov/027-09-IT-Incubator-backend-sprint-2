@@ -34,7 +34,7 @@ blogsRouter.get("/", async (req: RequestWithSearchTerms<QueryBlogRequestType>, r
 
     const sortData: SortBlogRepositoryType = {
         sortBy: query.sortBy || "createdAt",
-        sortDirection: query.sortDirection || "desc",
+        sortDirection: query.sortDirection==="asc"? 1 : -1,
         pageNumber: query.pageNumber || 1,
         pageSize: query.pageSize || 10
     }

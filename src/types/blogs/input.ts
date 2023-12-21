@@ -18,7 +18,7 @@ export type QueryBlogRequestType = {
 }
 export type SortBlogRepositoryType = {
     sortBy: string
-    sortDirection: "asc" | "desc"
+    sortDirection: 1|-1
     pageNumber: number
     pageSize: number
 }
