@@ -4,7 +4,8 @@ import {
     RequestWithBody,
     RequestWithBodyAndParams,
     RequestWithParams,
-    RequestWithSearchTerms
+    RequestWithSearchTerms,
+    RequestWithSearchTermsAndParams
 } from "../types/common";
 import {basicAuthorizationMiddleware, bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {HTTP_STATUSES} from "../utils/comon";
@@ -14,8 +15,11 @@ import {validationPostsChains} from "../middlewares/validators/posts-validators"
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {PostsQueryRepository} from "../repositories/posts-query-repository";
 import {PostsService} from "../domains/posts-service";
-import {CreateCommentDataType, CreateCommentDto} from "../types/comments/input";
+import {CreateCommentDataType, CreateCommentDto, SortCommentsType} from "../types/comments/input";
 import {CommentsService} from "../domains/comments-service";
+import {validatePost} from "../middlewares/validators/comments-validator";
+import {CommentsRepository} from "../repositories/comments-repository";
+import {CommentsQueryRepository} from "../repositories/comments-query-repository";
 
 export const postsRouter = Router();
 
@@ -30,6 +34,21 @@ postsRouter.get("/", async (req: RequestWithSearchTerms<QueryPostRequestType>, r
 
     const posts = await PostsQueryRepository.getAllPosts(sortData);
     res.status(HTTP_STATUSES.OK_200).json(posts);
+})
+
+postsRouter.get("/:id/comments", validatePost, async (req: RequestWithSearchTermsAndParams<Params, any>, res: Response) => {
+    const sortData: SortCommentsType = {
+        sortBy: req.query.sortBy || "createdAt",
+        sortDirection: req.query.sortDirection === "asc" ? 1 : -1,
+        pageNumber: req.query.pageNumber || 1,
+        pageSize: req.query.pageSize || 10
+    }
+    const comments = await CommentsQueryRepository.getAllCommentsByPostId(sortData,req.params.id);
+    if (!comments){
+        res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
+        return;
+    }
+    res.status(HTTP_STATUSES.OK_200).json(comments);
 })
 
 postsRouter.get("/:id", async (req: RequestWithParams<Params>, res: Response) => {
