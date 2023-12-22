@@ -1,13 +1,14 @@
 import {NextFunction, Request, Response} from "express";
 import {btoa} from "buffer";
 import {HTTP_STATUSES} from "../../utils/comon";
-import request from "supertest";
+
 import {AuthService} from "../../domains/auth-service";
 import {UsersRepository} from "../../repositories/users-repository";
 
 const login = "admin";
 const password = "qwerty";
 const method = "Basic"
+
 // middleware для проверки авторизации
 export const basicAuthorizationMiddleware =  (req: Request, res: Response, next: NextFunction) => {
 

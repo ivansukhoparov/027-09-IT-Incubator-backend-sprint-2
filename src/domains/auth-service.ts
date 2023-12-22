@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import {AuthOutputType} from "../types/auth/otput";
-import {runDB} from "../db/db";
 
 dotenv.config();
 debugger;

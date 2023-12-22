@@ -3,10 +3,8 @@ import {videosRouter} from "./routers/videos-router";
 import {testingRouter} from "./routers/testing-router";
 import {blogsRouter} from "./routers/blogs-router";
 import {postsRouter} from "./routers/posts-router";
-import bodyParser from "body-parser";
 import {authRouter} from "./routers/auth-router";
 import {usersRouter} from "./routers/users-router";
-import {commentsCollection} from "./db/db-collections";
 import {commentsRouter} from "./routers/comments-router";
 
 export const app = express();

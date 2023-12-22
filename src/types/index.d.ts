@@ -1,4 +1,4 @@
-import {UserOutputType, UserType} from "./users/output";
+import {UserOutputType} from "./users/output";
 
 declare global {
     namespace Express {

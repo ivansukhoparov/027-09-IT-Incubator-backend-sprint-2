@@ -6,7 +6,6 @@ import {HTTP_STATUSES} from "../utils/comon";
 import {loginValidationChain} from "../middlewares/validators/auth-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
-import {UserOutputMeType, UserOutputType} from "../types/users/output";
 
 
 export const authRouter=Router();

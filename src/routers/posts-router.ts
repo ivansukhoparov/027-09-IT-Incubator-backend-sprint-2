@@ -18,7 +18,6 @@ import {PostsService} from "../domains/posts-service";
 import {CreateCommentDataType, CreateCommentDto, SortCommentsType} from "../types/comments/input";
 import {CommentsService} from "../domains/comments-service";
 import {validatePost} from "../middlewares/validators/comments-validator";
-import {CommentsRepository} from "../repositories/comments-repository";
 import {CommentsQueryRepository} from "../repositories/comments-query-repository";
 
 export const postsRouter = Router();
