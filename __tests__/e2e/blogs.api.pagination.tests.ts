@@ -62,8 +62,7 @@ describe(routerName, () => {
         }
 
         createdBlogs =  await request(app).get(routerName).expect(200);
-        expect(createdBlogs.body.items.length).toBe(6)
-        console.log(createdBlogs.body)
+        expect(createdBlogs.body.items.length).toBe(6);
     })
 
 

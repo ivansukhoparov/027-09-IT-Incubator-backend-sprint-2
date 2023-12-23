@@ -121,7 +121,7 @@ describe(routerName, () => {
     })
 
     let testBlog1: any;
-    it(" - POST should be create the blog with correct data", async () => {
+    it(" + POST should be create the blog with correct data", async () => {
         const res = await request(app).post(routerName)
             .auth("admin", "qwerty")
             .send({

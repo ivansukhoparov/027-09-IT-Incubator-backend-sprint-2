@@ -132,14 +132,14 @@ describe(routerName, () => {
             .send(createUserData.invalidEmail.data)
             .expect(HTTP_STATUSES.BAD_REQUEST_400, createUserData.invalidEmail.errors);
     })
-    it(" - POST should create user with valid data and return created user", async () => {
+    it(" + POST should create user with valid data and return created user", async () => {
         const res = await request(app).post(routerName).auth("admin", "qwerty")
             .send(createUserData.valid.data)
             .expect(HTTP_STATUSES.CREATED_201);
         user = res.body
     })
 
-    it(" - GET should return all user ", async () => {
+    it(" + GET should return all user ", async () => {
         await request(app).get(routerName)
             .expect(HTTP_STATUSES.OK_200);
     })
