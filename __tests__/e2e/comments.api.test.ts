@@ -7,6 +7,7 @@ import {PostOutputType} from "../../src/types/posts/output";
 import {HTTP_STATUSES} from "../../src/utils/comon";
 import {CreateBlogDto} from "../../src/types/blogs/input";
 import {BlogOutputType} from "../../src/types/blogs/output";
+import {OutputCommentType} from "../../src/types/comments/output";
 
 interface ITestUserType extends UserOutputType {
     accessToken?: string
@@ -45,6 +46,7 @@ const createTestPosts: Array<CreatePostDto> = [
 const testUsers: Array<ITestUserType> = [];
 const testPosts: Array<PostOutputType> = [];
 const testBlogs: Array<BlogOutputType> = [];
+const testComments: Array<OutputCommentType> = [];
 
 const testCommentsData = {
     validComment: {
@@ -60,6 +62,25 @@ const testCommentsData = {
             },
             createdAt: expect.any(String)
         }
+    },
+    shortComment: {content: "length_19-weqweqweq"},
+    longComment: {
+        content: `length_301-weqweqweq_123456789_123456789_123456789_123456789_123456789_123456789_123456789
+    _123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789
+    _123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_123456789_`
+    },
+    updateComment: {content: "length_22-weqweqweqqwe"}
+
+}
+
+const errorMessage = (field?: string) => {
+    return {
+        errorsMessages: [
+            {
+                message: expect.any(String),
+                field: "content" || field
+            }
+        ]
     }
 }
 describe(routerName, () => {
@@ -97,6 +118,14 @@ describe(routerName, () => {
                 .expect(HTTP_STATUSES.CREATED_201); // Check post is created
             testPosts[i] = res.body;
         }
+        // Create comments for post1 by user1 (30 items)
+        for (let i = 0; i < 30; i++) {
+            const res = await request(app).post(`/posts/${testPosts[0].id}/comments`)
+                .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+                .send(testCommentsData.validComment.request)
+                .expect(HTTP_STATUSES.CREATED_201);
+            testComments[i] = res.body;
+        }
 
     });
 
@@ -107,19 +136,43 @@ describe(routerName, () => {
         expect(testPosts[0].title).toBe(createTestPosts[0].title);
     });
 
-    it(" - create comment without authorization should return 401", async () => {
+    // POST requests
+
+    it(" - POST create comment without authorization should return 401", async () => {
         await request(app).post(`/posts/${testPosts[0].id}/comments`).send(testCommentsData.validComment).expect(HTTP_STATUSES.UNAUTHORIZED_401);
     })
 
-    it(" - create comment to post with invalid Id should return 404", async  () => {
+    it("- POST comment with invalid token should return 401", async () => {
+        const result = await request(app).post(`/posts/${testPosts[0].id}/comments`)
+            .set("Authorization", `Bearer This_is_not_a_token`)
+            .send(testCommentsData.shortComment)
+            .expect(HTTP_STATUSES.UNAUTHORIZED_401);
+    })
+
+    it(" - POST create comment to post with invalid Id should return 404", async () => {
         await request(app).post(`/posts/123456789/comments`)
             .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
             .send(testCommentsData.validComment.request)
             .expect(HTTP_STATUSES.NOT_FOUND_404);
     })
 
+    it("- POST comment with invalid data (too short) should return 400", async () => {
+        const result = await request(app).post(`/posts/${testPosts[0].id}/comments`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .send(testCommentsData.shortComment)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400);
+        expect(result.body).toEqual(errorMessage());
+    })
 
-    it("+ comment with valid data and post id should be created", async () => {
+    it("- POST comment with invalid data (too long) should return 400", async () => {
+        const result = await request(app).post(`/posts/${testPosts[0].id}/comments`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .send(testCommentsData.longComment)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400);
+        expect(result.body).toEqual(errorMessage());
+    })
+
+    it("+ POST comment with valid data and post id should be created", async () => {
         const result = await request(app).post(`/posts/${testPosts[0].id}/comments`)
             .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
             .send(testCommentsData.validComment.request)
@@ -133,7 +186,122 @@ describe(routerName, () => {
         })
     })
 
+    // PUT requests
+
+    it(" - PUT update comment without authorization should return 401", async () => {
+        await request(app).put(`/comments/${testComments[0].id}`).send(testCommentsData.updateComment).expect(HTTP_STATUSES.UNAUTHORIZED_401);
+    })
+
+    it("- PUT update comment with invalid token should return 401", async () => {
+        const result = await request(app).put(`/comments/${testComments[0].id}`)
+            .set("Authorization", `Bearer This_is_not_a_token`)
+            .send(testCommentsData.shortComment)
+            .expect(HTTP_STATUSES.UNAUTHORIZED_401);
+    })
+
+    it(" - PUT update comment to post with invalid Id should return 404", async () => {
+        await request(app).put(`/comments/1234567890`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .send(testCommentsData.validComment.request)
+            .expect(HTTP_STATUSES.NOT_FOUND_404);
+    })
+
+    it("- PUT update with invalid data (too short) should return 400", async () => {
+        const result = await request(app).put(`/comments/${testComments[0].id}`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .send(testCommentsData.shortComment)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400);
+        expect(result.body).toEqual(errorMessage());
+    })
+
+    it("- PUT update with invalid data (too long) should return 400", async () => {
+        const result = await request(app).put(`/comments/${testComments[0].id}`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .send(testCommentsData.longComment)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400);
+        expect(result.body).toEqual(errorMessage());
+    })
+
+    it("+ PUT update with valid data and post id should be updated", async () => {
+        await request(app).put(`/comments/${testComments[0].id}`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .send(testCommentsData.updateComment)
+            .expect(HTTP_STATUSES.NO_CONTENT_204);
+
+        // check is updated
+        const result = await request(app).get(`/comments/${testComments[0].id}`)
+            .expect(HTTP_STATUSES.OK_200)
+
+        expect(result.body).toEqual({
+            ...testCommentsData.validComment.response,
+            content: testCommentsData.updateComment,
+            commentatorInfo: {
+                ...testCommentsData.validComment.response.commentatorInfo,
+                userId: testUsers[0].id
+            }
+        })
+    })
+
+    // GET requests
+
+    // GET requests for single comment
+    it(" - GET request with invalid id should return 404", async () => {
+        const result = await request(app).get(`/comments/1234567890`)
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+
+    it(" + GET request by post id should return 200 and comment", async () => {
+        const result = await request(app).get(`/comments/${testComments[0].id}`)
+            .expect(HTTP_STATUSES.OK_200)
+
+        expect(result.body).toEqual({
+            ...testCommentsData.validComment.response,
+            content: testCommentsData.updateComment,
+            commentatorInfo: {
+                ...testCommentsData.validComment.response.commentatorInfo,
+                userId: testUsers[0].id
+            }
+        })
+    })
+
+    // GET requests by post id
+    it(" - GET request with invalid post id should return 404", async () => {
+        const result = await request(app).get(`/posts/1234567890/comments`)
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+
+    it(" + GET request by post id should return 200 and view model with 31 items", async () => {
+        const result = await request(app).get(`/posts/${testPosts[0].id}/comments`)
+            .expect(HTTP_STATUSES.OK_200)
+
+        expect(result.body).toEqual({
+            pagesCount: 4,
+            page: 1,
+            pageSize: 10,
+            totalCount: 31,
+            items: expect.any(Array)
+        })
+        expect(result.body.items.length).toBe(31)
+    })
+
+    it(" + GET request by post id should return 200 and view model with 0 items", async () => {
+        const result = await request(app).get(`/posts/${testPosts[0].id}/comments`)
+            .expect(HTTP_STATUSES.OK_200)
+
+        expect(result.body).toEqual({
+            pagesCount: 1,
+            page: 1,
+            pageSize: 10,
+            totalCount: 0,
+            items: []
+        })
+        expect(result.body.items.length).toBe(0)
+    })
+
+
+
 })
+
 
 
 
