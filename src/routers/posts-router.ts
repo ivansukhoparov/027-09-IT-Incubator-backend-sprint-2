@@ -86,7 +86,7 @@ postsRouter.post("/:id/comments", bearerAuthorizationMiddleware, async (req: Req
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
         return;
     }
-    res.status(HTTP_STATUSES.OK_200).json(comment);
+    res.status(HTTP_STATUSES.CREATED_201).json(comment);
 })
 
 postsRouter.put("/:id", basicAuthorizationMiddleware, validationPostsChains(), inputValidationMiddleware, async (req: RequestWithBodyAndParams<Params, UpdatePostDto>, res: Response) => {
