@@ -13,6 +13,7 @@ export const runDB = async () => {
         // Check connection
         await client.db("admin").command({ping: 1});
         console.log("Mongo server connection successful");
+        console.log("DB connected to " + mongoUri);
     }catch  {
         await client.close()
         console.log("Mongo server connection failed")
