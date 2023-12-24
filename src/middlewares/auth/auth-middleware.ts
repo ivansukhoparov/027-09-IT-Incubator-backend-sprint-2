@@ -4,7 +4,6 @@ import {HTTP_STATUSES} from "../../utils/comon";
 
 import {AuthService} from "../../domains/auth-service";
 import {UsersRepository} from "../../repositories/users-repository";
-import {CommentsRepository} from "../../repositories/comments-repository";
 import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
 
 const login = "admin";
@@ -57,13 +56,14 @@ export const bearerAuthorizationMiddleware = async (req:Request, res:Response, n
 }
 
 export const accessRight = async (req:Request, res:Response, next: NextFunction)=>{
+
     const comment = await CommentsQueryRepository.getCommentById(req.params.id)
     if (!comment){
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
         return;
     }
     const ownerId = comment.commentatorInfo.userId;
-    if (ownerId!== req.user.id){
+    if (ownerId !== req.user.id) {
         res.sendStatus(HTTP_STATUSES.FORBIDDEN_403);
         return;
     }
