@@ -1,6 +1,7 @@
 import {CommentType} from "../types/comments/output";
 import {commentsCollection} from "../db/db-collections";
 import {ObjectId} from "mongodb";
+import {UpdateCommentDto} from "../types/comments/input";
 
 export class CommentsRepository{
     static async addNewComment(newComment:CommentType):Promise<string|null>{
@@ -18,6 +19,19 @@ export class CommentsRepository{
             return result.deletedCount === 1;
         }catch (err){
             return null
+        }
+    }
+
+    static async updateCommentById(updateData:UpdateCommentDto, id:string){
+        try {
+
+            const result = await commentsCollection.updateOne(
+                {_id:new ObjectId(id)},
+                { $set: updateData}
+            )
+            return result.matchedCount === 1;
+        }catch(err){
+            return false;
         }
     }
 }
