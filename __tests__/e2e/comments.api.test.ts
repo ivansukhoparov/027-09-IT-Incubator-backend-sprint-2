@@ -240,7 +240,7 @@ describe(routerName, () => {
 
         expect(result.body).toEqual({
             ...testCommentsData.validComment.response,
-            content: testCommentsData.updateComment,
+            content: testCommentsData.updateComment.content,
             commentatorInfo: {
                 ...testCommentsData.validComment.response.commentatorInfo,
                 userId: testUsers[0].id
@@ -262,7 +262,7 @@ describe(routerName, () => {
 
         expect(result.body).toEqual({
             ...testCommentsData.validComment.response,
-            content: testCommentsData.updateComment,
+            content: testCommentsData.updateComment.content,
             commentatorInfo: {
                 ...testCommentsData.validComment.response.commentatorInfo,
                 userId: testUsers[0].id
