@@ -17,7 +17,7 @@ import {PostsQueryRepository} from "../repositories/posts-query-repository";
 import {PostsService} from "../domains/posts-service";
 import {CreateCommentDataType, CreateCommentDto, SortCommentsType} from "../types/comments/input";
 import {CommentsService} from "../domains/comments-service";
-import {validatePost} from "../middlewares/validators/comments-validator";
+import {validateComment, validatePost} from "../middlewares/validators/comments-validator";
 import {CommentsQueryRepository} from "../repositories/comments-query-repository";
 
 export const postsRouter = Router();
@@ -60,7 +60,11 @@ postsRouter.get("/:id", async (req: RequestWithParams<Params>, res: Response) =>
     }
 })
 
-postsRouter.post('/', basicAuthorizationMiddleware, validationPostsChains(), inputValidationMiddleware, async (req: RequestWithBody<CreatePostDto>, res: Response) => {
+postsRouter.post('/',
+    basicAuthorizationMiddleware,
+    validationPostsChains(),
+    inputValidationMiddleware,
+    async (req: RequestWithBody<CreatePostDto>, res: Response) => {
 
     const creatData = req.body;
     const createdPost = await PostsService.createNewPost(creatData)
@@ -74,7 +78,12 @@ postsRouter.post('/', basicAuthorizationMiddleware, validationPostsChains(), inp
 
 })
 
-postsRouter.post("/:id/comments", bearerAuthorizationMiddleware, async (req: RequestWithBodyAndParams<Params, CreateCommentDto>, res: Response) => {
+postsRouter.post("/:id/comments",
+    bearerAuthorizationMiddleware,
+    validatePost,
+    validateComment,
+    inputValidationMiddleware,
+    async (req: RequestWithBodyAndParams<Params, CreateCommentDto>, res: Response) => {
     const createCommentData: CreateCommentDataType = {
         content: req.body.content,
         userId: req.user.id,

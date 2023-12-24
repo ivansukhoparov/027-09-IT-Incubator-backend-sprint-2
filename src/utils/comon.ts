@@ -4,7 +4,7 @@ dotenv.config();
 
 let counter = 0
 
-export const mongoUri = process.env.MONGO_URL! //|| "mongodb://0.0.0.0:27017"
+export const mongoUri = "mongodb://0.0.0.0:27017" ||process.env.MONGO_URL!
 
 export const port: number = 5001;
 
