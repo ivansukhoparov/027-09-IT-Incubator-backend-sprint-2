@@ -311,7 +311,7 @@ describe(routerName, () => {
         })
 
     it(" - doesn't delete if user not owner, return 403", async ()=>{
-        await request(app).delete(`/comments/${testComments[0]}`)
+        await request(app).delete(`/comments/${testComments[0].id}`)
             .set("Authorization", `Bearer ${testUsers[1].accessToken}`)
             .expect(HTTP_STATUSES.FORBIDDEN_403);
     })
@@ -322,7 +322,7 @@ describe(routerName, () => {
     })
 
     it(" - should delete if all correct", async ()=>{
-        await request(app).delete(`/comments/${testComments[0]}`)
+        await request(app).delete(`/comments/${testComments[0].id}`)
             .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
             .expect(HTTP_STATUSES.NO_CONTENT_204);
 
@@ -330,7 +330,7 @@ describe(routerName, () => {
             .expect(HTTP_STATUSES.OK_200)
 
         expect(result.body).toEqual({
-            pagesCount: 4,
+            pagesCount: 3,
             page: 1,
             pageSize: 10,
             totalCount: 30,
