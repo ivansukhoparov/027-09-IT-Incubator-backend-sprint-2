@@ -40,6 +40,12 @@ const createTestPosts: Array<CreatePostDto> = [
         shortDescription: "a very short description",
         content: "some content",
         blogId: "testBlogID"
+    },
+    {
+        title: "Post 2",
+        shortDescription: "a very short description",
+        content: "some content",
+        blogId: "testBlogID"
     }
 ];
 
@@ -281,15 +287,15 @@ describe(routerName, () => {
             totalCount: 31,
             items: expect.any(Array)
         })
-        expect(result.body.items.length).toBe(31)
+        expect(result.body.items.length).toBe(10)
     })
 
     it(" + GET request by post id should return 200 and view model with 0 items", async () => {
-        const result = await request(app).get(`/posts/${testPosts[0].id}/comments`)
+        const result = await request(app).get(`/posts/${testPosts[1].id}/comments`)
             .expect(HTTP_STATUSES.OK_200)
 
         expect(result.body).toEqual({
-            pagesCount: 1,
+            pagesCount: 0,
             page: 1,
             pageSize: 10,
             totalCount: 0,
