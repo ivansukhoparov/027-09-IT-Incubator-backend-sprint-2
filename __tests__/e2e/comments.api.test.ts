@@ -304,6 +304,40 @@ describe(routerName, () => {
         expect(result.body.items.length).toBe(0)
     })
 
+// DELETE requests
+
+    it(" - doesn't delete without authorization, return 401", async ()=>{
+        await request(app).delete(`/comments/${testComments[0]}`).expect(HTTP_STATUSES.UNAUTHORIZED_401);
+        })
+
+    it(" - doesn't delete if user not owner, return 403", async ()=>{
+        await request(app).delete(`/comments/${testComments[0]}`)
+            .set("Authorization", `Bearer ${testUsers[1].accessToken}`)
+            .expect(HTTP_STATUSES.FORBIDDEN_403);
+    })
+    it(" - should return 404 if id incorrect", async ()=>{
+        await request(app).delete(`/comments/123457789456`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .expect(HTTP_STATUSES.NOT_FOUND_404);
+    })
+
+    it(" - should delete if all correct", async ()=>{
+        await request(app).delete(`/comments/${testComments[0]}`)
+            .set("Authorization", `Bearer ${testUsers[0].accessToken}`)
+            .expect(HTTP_STATUSES.NO_CONTENT_204);
+
+        const result = await request(app).get(`/posts/${testPosts[0].id}/comments`)
+            .expect(HTTP_STATUSES.OK_200)
+
+        expect(result.body).toEqual({
+            pagesCount: 4,
+            page: 1,
+            pageSize: 10,
+            totalCount: 30,
+            items: expect.any(Array)
+        })
+        expect(result.body.items.length).toBe(10)
+    })
 
 
 })
