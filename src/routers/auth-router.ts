@@ -10,6 +10,15 @@ import {bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware
 
 export const authRouter=Router();
 
+authRouter.get("/me", bearerAuthorizationMiddleware, async (req: Request, res: Response) => {
+    const user = {
+        login: req.user!.login,
+        email: req.user!.email,
+        userId: req.user!.id
+    }
+    res.status(HTTP_STATUSES.OK_200).json(user);
+})
+
 authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
     const authData:AuthType = {
         loginOrEmail:req.body.loginOrEmail,
@@ -26,12 +35,15 @@ authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, asy
 
 })
 
+authRouter.post("/registration", async (req: Request, res: Response) => {
 
-authRouter.get("/me", bearerAuthorizationMiddleware, async (req:Request, res:Response)=>{
-    const user = {
-        login: req.user!.login,
-        email:req.user!.email,
-        userId:req.user!.id
-    }
-    res.status(HTTP_STATUSES.OK_200).json(user);
 })
+
+authRouter.post("/registration-confirmation", async (req: Request, res: Response) => {
+
+})
+
+authRouter.post("/registration-email-resending", async (req: Request, res: Response) => {
+
+})
+
