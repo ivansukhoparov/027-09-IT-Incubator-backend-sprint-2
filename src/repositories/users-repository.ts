@@ -9,7 +9,7 @@ export class UsersRepository {
     static async getUserById(id: string): Promise<UserOutputType | null> {
         try {
             const user = await usersCollection.findOne({_id: new ObjectId(id)});
-            if (!user || user.deleted) return null;
+            if (!user) return null;
             return userMapper(user);
         } catch (err) {
             return null;
@@ -42,18 +42,6 @@ export class UsersRepository {
             return null
         }
     }
-
-    /*
-      this old version really delete user from DB
-    static async deleteUser(id: string) {
-           try {
-            const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
-            return result.deletedCount === 1
-        } catch (err) {
-            return false
-        }
-    }
-    */
 
     static async deleteUser(id: string) {
         try {
