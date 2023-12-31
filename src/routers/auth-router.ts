@@ -36,6 +36,7 @@ authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, asy
 })
 
 authRouter.post("/registration", async (req: RequestWithBody<RegistrationInfoType>, res: Response) => {
+
     const isSuccessful = await AuthService.registerUser(req.body.login, req.body.email, req.body.password);
     if (!isSuccessful) {
         res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);

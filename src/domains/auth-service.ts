@@ -33,7 +33,8 @@ export class AuthService {
     }
 
     static async registerUser(login: string, email: string, password: string) {
-        await UsersDomain.createUser(login, email, password);
+
+        const created = await UsersDomain.createUser(login, email, password);
         const createdUser = await UsersRepository.getUserByLoginOrEmail(email);
         if (!createdUser) return false;
         const isEmailSent = await EmailAdapter.sendEmailConfirmationEmail(createdUser);

@@ -28,12 +28,7 @@ export class UsersRepository {
 
     static async getUserByLoginOrEmail(loginOrEmail: string) {
         try {
-            const searchKey = {
-                $and: [
-                    {deleted: false},
-                    {$or: [{login: loginOrEmail}, {email: loginOrEmail}]}
-                ]
-            };
+            const searchKey = {$or: [{login: loginOrEmail}, {email: loginOrEmail}]};
             const user = await usersCollection.findOne(searchKey);
             if (!user) return null;
 
