@@ -1,7 +1,7 @@
-import {UserOutputType, UserType} from "../types/users/output";
+import {UserOutputAuthType, UserOutputType, UserType} from "../types/users/output";
 import {usersCollection} from "../db/db-collections";
 import {ObjectId} from "mongodb";
-import {userMapper, userMapperWithPassword} from "../types/users/mapper";
+import {userMapper, userMapperAuth} from "../types/users/mapper";
 
 
 export class UsersRepository {
@@ -11,6 +11,16 @@ export class UsersRepository {
             const user = await usersCollection.findOne({_id: new ObjectId(id)});
             if (!user) return null;
             return userMapper(user);
+        } catch (err) {
+            return null;
+        }
+    }
+
+    static async getUserAuthInfoById(id: string): Promise<UserOutputAuthType | null> {
+        try {
+            const user = await usersCollection.findOne({_id: new ObjectId(id)});
+            if (!user) return null;
+            return userMapperAuth(user);
         } catch (err) {
             return null;
         }
@@ -27,7 +37,7 @@ export class UsersRepository {
             const user = await usersCollection.findOne(searchKey);
             if (!user) return null;
 
-            return userMapperWithPassword(user);
+            return userMapperAuth(user);
 
         } catch (err) {
             return null;

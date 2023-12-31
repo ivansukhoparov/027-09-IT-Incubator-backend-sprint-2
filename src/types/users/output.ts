@@ -5,13 +5,16 @@ export type UserOutputType = {
     createdAt: string
 }
 
-export type UserAuthOutputType = {
+export type UserOutputAuthType = {
     id: string
     login: string
     email: string
     createdAt: string
     hash: string
-
+    emailConfirmation:{
+        confirmationCode:string
+        isConfirmed:boolean
+    }
 }
 
 export type UserType = {
@@ -19,7 +22,10 @@ export type UserType = {
     email: string
     hash: string
     createdAt: string
-
+    emailConfirmation:{
+        confirmationCode:string
+        isConfirmed:boolean
+    }
 }
 
 export type UserOutputMeType = {

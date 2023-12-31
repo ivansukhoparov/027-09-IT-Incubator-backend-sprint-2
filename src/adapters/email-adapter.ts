@@ -1,35 +1,37 @@
 import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-import {emailLogin, emailPassword} from "../utils/comon";
+import {emailFrom, transporterOption} from "./common";
+import {EmailMessage} from "../types/email/input";
+import {UserOutputAuthType} from "../types/users/output";
+import {emailManager} from "./email-manager";
 
-dotenv.config();
-
-export const emailAdapter ={
-
-    async sendEmail(email:string,subject:string,message:string){
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: emailLogin,
-                pass: emailPassword
-            },
-            tls: {
-                // do not fail on invalid certs
-                rejectUnauthorized: false
-            },
-        });
-        const info = await transporter.sendMail({
-            from: '"SI Solution" <sukhoparov.ivan@gmail.com>', // sender address
-            to: email,
-            subject: subject,
-            text: message,
-            html:message
-        });
-
-        return info;
-
+export class EmailAdapter {
+    static async sendEmailConfirmationEmail(user: UserOutputAuthType) {
+        const isEmailSent = this._sendEmail(user.email,
+            emailFrom.registrationService,
+            emailManager.confirmationEmail(user.emailConfirmation.confirmationCode,user.login));
+        if (!isEmailSent) return false;
+        return true;
     }
 
+    static async _sendEmail(mailTo: string, mailFrom: string, emailMessage: EmailMessage) {
+        try {
+            const transporter = nodemailer.createTransport(transporterOption);
+            const sentEmailInfo = await transporter.sendMail(
+                {
+                    ...emailMessage,
+                    from: mailFrom,
+                    to: mailTo,
+                });
+            console.log("email sent");
+            console.log(sentEmailInfo);
+            return true;
+        } catch (err) {
+            console.log("email don't sent");
+            console.log(err);
+            return false;
+        }
+
+    }
 }
 
 

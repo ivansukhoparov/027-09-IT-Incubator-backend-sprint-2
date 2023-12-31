@@ -38,7 +38,7 @@ usersRouter.get("/", async (req: RequestWithSearchTerms<QueryUsersRequestType>, 
 
 usersRouter.post("/", basicAuthorizationMiddleware, usersValidationChain(),inputValidationMiddleware,  async (req:RequestWithBody<CreateUserType>, res:Response)=>{
 
-    const createdUser: UserOutputType | null = await UsersDomain.createUser(req.body.login, req.body.email, req.body.password);
+    const createdUser: UserOutputType | null = await UsersDomain.createUser(req.body.login, req.body.email, req.body.password, true);
     if (!createdUser) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400);
         return

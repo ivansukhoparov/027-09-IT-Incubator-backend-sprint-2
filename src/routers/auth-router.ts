@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {RequestWithBody} from "../types/common";
-import {AuthType} from "../types/auth/input";
+import {AuthType, RegistrationInfoType} from "../types/auth/input";
 import {AuthService} from "../domains/auth-service";
 import {HTTP_STATUSES} from "../utils/comon";
 import {loginValidationChain} from "../middlewares/validators/auth-validators";
@@ -24,7 +24,7 @@ authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, asy
         loginOrEmail:req.body.loginOrEmail,
         password:req.body.password
     }
-    const accessToken= await AuthService.authUser(authData.loginOrEmail,authData.password);
+    const accessToken = await AuthService.loginUser(authData.loginOrEmail, authData.password);
 
     if (!accessToken) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
@@ -35,8 +35,13 @@ authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, asy
 
 })
 
-authRouter.post("/registration", async (req: Request, res: Response) => {
-
+authRouter.post("/registration", async (req: RequestWithBody<RegistrationInfoType>, res: Response) => {
+    const isSuccessful = await AuthService.registerUser(req.body.login, req.body.email, req.body.password);
+    if (!isSuccessful) {
+        res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
+        return;
+    }
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 })
 
 authRouter.post("/registration-confirmation", async (req: Request, res: Response) => {
