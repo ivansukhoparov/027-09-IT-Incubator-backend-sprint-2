@@ -12,7 +12,13 @@ export class EmailAdapter {
         if (!isEmailSent) return false;
         return true;
     }
-
+    static async reSendEmailConfirmationEmail(user: UserOutputAuthType) {
+        const isEmailSent =await this._sendEmail(user.email,
+            emailFrom.registrationService,
+            emailManager.reConfirmationEmail(user.emailConfirmation.confirmationCode,user.email));
+        if (!isEmailSent) return false;
+        return true;
+    }
     static async _sendEmail(mailTo: string, mailFrom: string, emailMessage: EmailMessage) {
         try {
             const transporter = nodemailer.createTransport(transporterOption);

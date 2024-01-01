@@ -55,7 +55,7 @@ export class AuthService {
         if (!isUserUpdated) return false;
         const user = await UsersRepository.getUserByCustomKey("email", email);
         if (!user) return false;
-        return await EmailAdapter.sendEmailConfirmationEmail(user);
+        return await EmailAdapter.reSendEmailConfirmationEmail(user);
     }
 
     static async confirmEmail(confirmationCode: string) {
