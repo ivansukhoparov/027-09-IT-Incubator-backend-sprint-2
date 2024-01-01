@@ -1,12 +1,10 @@
 
 import {body} from "express-validator";
-import {Params, RequestWithBody, RequestWithParams} from "../../types/common";
+import {RequestWithBody} from "../../types/common";
 import {NextFunction, Response} from "express";
-import {PostsQueryRepository} from "../../repositories/posts-query-repository";
+
 import {HTTP_STATUSES} from "../../utils/comon";
 import {RegistrationInfoType} from "../../types/auth/input";
-import {UsersQueryRepository} from "../../repositories/users-query-repository";
-import {UsersDomain} from "../../domains/users-domain";
 import {UsersRepository} from "../../repositories/users-repository";
 
 
