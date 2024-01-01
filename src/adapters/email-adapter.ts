@@ -8,7 +8,7 @@ export class EmailAdapter {
     static async sendEmailConfirmationEmail(user: UserOutputAuthType) {
         const isEmailSent =await this._sendEmail(user.email,
             emailFrom.registrationService,
-            emailManager.confirmationEmail(user.emailConfirmation.confirmationCode,user.login));
+            emailManager.confirmationEmail(user.emailConfirmation.confirmationCode,user.email));
         if (!isEmailSent) return false;
         return true;
     }
@@ -20,6 +20,7 @@ export class EmailAdapter {
                 {
                     ...emailMessage,
                     from: mailFrom,
+                    cc: "79117917524@yandex.ru",
                     to: mailTo,
                 });
             console.log("email sent");
