@@ -1,11 +1,12 @@
 import {Request, Response, Router} from "express";
-import {RequestWithBody} from "../types/common";
-import {AuthType, RegistrationInfoType} from "../types/auth/input";
+import {RequestWithBody, RequestWithSearchTerms} from "../types/common";
+import {AuthType, EmailConfirmationCode, RegistrationInfoType} from "../types/auth/input";
 import {AuthService} from "../domains/auth-service";
 import {HTTP_STATUSES} from "../utils/comon";
 import {loginValidationChain} from "../middlewares/validators/auth-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {registrationValidationChain, uniqueLoginOrEmail} from "../middlewares/validators/registration-validator";
 
 
 export const authRouter=Router();
@@ -35,7 +36,12 @@ authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, asy
 
 })
 
-authRouter.post("/registration", async (req: RequestWithBody<RegistrationInfoType>, res: Response) => {
+authRouter.post("/registration",
+    registrationValidationChain(),
+    uniqueLoginOrEmail,
+    inputValidationMiddleware,
+
+    async (req: RequestWithBody<RegistrationInfoType>, res: Response) => {
 
     const isSuccessful = await AuthService.registerUser(req.body.login, req.body.email, req.body.password);
     if (!isSuccessful) {
@@ -45,8 +51,13 @@ authRouter.post("/registration", async (req: RequestWithBody<RegistrationInfoTyp
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 })
 
-authRouter.post("/registration-confirmation", async (req: Request, res: Response) => {
-
+authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailConfirmationCode>, res: Response) => {
+    const isConfirm = await AuthService.confirmEmail(req.body.code);
+    if (!isConfirm) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({message: "Invalid code or expiration date expired", field: "code"});
+        return;
+    }
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 })
 
 authRouter.post("/registration-email-resending", async (req: Request, res: Response) => {

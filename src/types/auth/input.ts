@@ -8,3 +8,7 @@ export type RegistrationInfoType ={
     "password": string
     "email": string
 }
+
+export type EmailConfirmationCode = {
+    code: string
+}

@@ -16,16 +16,6 @@ export class UsersRepository {
         }
     }
 
-    static async getUserAuthInfoById(id: string): Promise<UserOutputAuthType | null> {
-        try {
-            const user = await usersCollection.findOne({_id: new ObjectId(id)});
-            if (!user) return null;
-            return userMapperAuth(user);
-        } catch (err) {
-            return null;
-        }
-    }
-
     static async getUserByLoginOrEmail(loginOrEmail: string) {
         try {
             const searchKey = {$or: [{login: loginOrEmail}, {email: loginOrEmail}]};

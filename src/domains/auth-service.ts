@@ -34,7 +34,7 @@ export class AuthService {
 
     static async registerUser(login: string, email: string, password: string) {
 
-        const created = await UsersDomain.createUser(login, email, password);
+        await UsersDomain.createUser(login, email, password);
         const createdUser = await UsersRepository.getUserByLoginOrEmail(email);
         if (!createdUser) return false;
         const isEmailSent = await EmailAdapter.sendEmailConfirmationEmail(createdUser);
@@ -44,4 +44,37 @@ export class AuthService {
         }
         return true;
     }
+
+    static async confirmEmail(confirmationCode: string) {
+
+        const receiptedCode = this._confirmationCodeToData(confirmationCode);
+        if (!receiptedCode) return false;
+        const user = await UsersRepository.getUserByLoginOrEmail(receiptedCode.userLogin)
+
+        if (!user) return false;
+        if (user.emailConfirmation.isConfirmed) return false;
+        if (confirmationCode !== user.emailConfirmation.confirmationCode) return false;
+
+        const userCode = this._confirmationCodeToData(user.emailConfirmation.confirmationCode);
+
+        if (receiptedCode.expirationDate < new Date().toISOString()) return false;
+
+        const isConfirmed = await UsersDomain.updateUserEmailConfirmationStatus(user.id);
+
+        return isConfirmed;
+    }
+
+    static _confirmationCodeToData(code: string) {
+        try{
+            const mappedCode = code.split(":").map(el => atob(el));
+            return {
+                confirmationCode: mappedCode[0],
+                userLogin: mappedCode[1],
+                expirationDate: mappedCode[2]
+            }
+        } catch (err){
+            return null
+        }
+        }
+
 }
