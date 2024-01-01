@@ -6,7 +6,7 @@ import {emailManager} from "./email-manager";
 
 export class EmailAdapter {
     static async sendEmailConfirmationEmail(user: UserOutputAuthType) {
-        const isEmailSent = this._sendEmail(user.email,
+        const isEmailSent =await this._sendEmail(user.email,
             emailFrom.registrationService,
             emailManager.confirmationEmail(user.emailConfirmation.confirmationCode,user.login));
         if (!isEmailSent) return false;
