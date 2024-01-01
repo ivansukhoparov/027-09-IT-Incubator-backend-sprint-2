@@ -54,7 +54,12 @@ authRouter.post("/registration",
 authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailConfirmationCode>, res: Response) => {
     const isConfirm = await AuthService.confirmEmail(req.body.code);
     if (!isConfirm) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({message: "Invalid code or expiration date expired", field: "code"});
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
+            errorsMessages: [{
+                message: "Invalid code or expiration date expired",
+                field: "code"
+            }]
+        });
         return;
     }
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);

@@ -16,12 +16,22 @@ const passwordValidator = body("password").trim().notEmpty().isString().isLength
 export const uniqueLoginOrEmail = async (req: RequestWithBody<RegistrationInfoType>, res:Response, next:NextFunction)=>{
     const userByLogin = await UsersRepository.getUserByLoginOrEmail(req.body.login);
     if (userByLogin){
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({message: "Login already in use", field: "login"});
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
+            errorsMessages: [{
+                message: "Login already in use",
+                field: "login"
+            }]
+        });
         return;
     }
     const userByEmail = await UsersRepository.getUserByLoginOrEmail(req.body.email);
     if (userByEmail) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({message: "Email already in use", field: "email"});
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
+            errorsMessages: [{
+                message: "Email already in use",
+                field: "email"
+            }]
+        });
         return;
     }
     next();
