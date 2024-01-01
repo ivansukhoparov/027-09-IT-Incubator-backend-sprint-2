@@ -1,25 +1,23 @@
 import {UserOutputType, UserType} from "../types/users/output";
 import {UsersRepository} from "../repositories/users-repository";
 import bcrypt from "bcrypt";
-import {v4 as uuidv4} from "uuid";
-import {add} from "date-fns/add"
-import {btoa} from "buffer";
 import {usersCollection} from "../db/db-collections";
 import {ObjectId} from "mongodb";
+import {AuthService} from "./auth-service";
+import {UserUpdateType} from "../types/users/input";
 
 export class UsersDomain {
     static async createUser(login: string, email: string, password: string, isConfirmed:boolean = false): Promise<UserOutputType | null> {
         const createdAt = new Date().toISOString();
         const hash = await bcrypt.hash(password, 10);
-        const confirmationCodeExpiration = add(new Date, {minutes: 580}).toISOString()
-        const confirmationCode = `${btoa(uuidv4())}:${btoa(login)}:${btoa(confirmationCodeExpiration)}`
+
         const newUser: UserType = {
             login: login,
             email: email,
             hash: hash,
             createdAt: createdAt,
             emailConfirmation: {
-                confirmationCode: confirmationCode,
+                confirmationCode: AuthService._createConfirmationCode(email),
                 isConfirmed: isConfirmed
             }
         }
@@ -40,5 +38,28 @@ export class UsersDomain {
         }catch (err){
            return false
        }
+    }
+    static async updateUserEmailConfirmationCode (email:string, code:string){
+        try {
+            const isUpdated = await usersCollection.updateOne({email: email}, {$set: {"emailConfirmation.confirmationCode": code}});
+            return isUpdated.matchedCount===1;
+        }catch (err){
+            return false
+        }
+    }
+    static async updateUserCustomFields(filterKey: string, filterValue: string, updateData: UserUpdateType) {
+        const user = await UsersRepository.getUserByCustomKey(filterKey, filterValue);
+        if (!user) return false;
+        const newData: UserType = {
+            ...user,
+            ...updateData,
+            emailConfirmation: {
+                ...user.emailConfirmation,
+                ...updateData.emailConfirmation
+            }
+        }
+
+        const isUpdated = await UsersRepository.updateUserCustomFields(filterKey, filterValue, newData);
+        return isUpdated
     }
 }

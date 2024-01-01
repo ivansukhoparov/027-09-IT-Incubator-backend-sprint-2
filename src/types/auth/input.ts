@@ -9,6 +9,10 @@ export type RegistrationInfoType ={
     "email": string
 }
 
-export type EmailConfirmationCode = {
+export type EmailConfirmationCodeType = {
     code: string
+}
+
+export type EmailConfirmationCodeResendRequestType = {
+    email: string
 }

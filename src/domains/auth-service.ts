@@ -6,6 +6,10 @@ import dotenv from "dotenv";
 import {AuthOutputType} from "../types/auth/otput";
 import {UsersDomain} from "./users-domain";
 import {EmailAdapter} from "../adapters/email-adapter";
+import {add} from "date-fns/add";
+import {btoa} from "buffer";
+import {v4 as uuidv4} from "uuid";
+import {UserUpdateType} from "../types/users/input";
 
 dotenv.config();
 debugger;
@@ -45,11 +49,20 @@ export class AuthService {
         return true;
     }
 
+    static async refreshEmailConfirmationCode(email: string) {
+        const newConfirmationCode = this._createConfirmationCode(email);
+        const isUserUpdated = await UsersDomain.updateUserEmailConfirmationCode( email, newConfirmationCode);
+        if (!isUserUpdated) return false;
+        const user = await UsersRepository.getUserByCustomKey("email", email);
+        if (!user) return false;
+        return await EmailAdapter.sendEmailConfirmationEmail(user);
+    }
+
     static async confirmEmail(confirmationCode: string) {
 
         const receiptedCode = this._confirmationCodeToData(confirmationCode);
         if (!receiptedCode) return false;
-        const user = await UsersRepository.getUserByLoginOrEmail(receiptedCode.userLogin)
+        const user = await UsersRepository.getUserByLoginOrEmail(receiptedCode.userEmail)
 
         if (!user) return false;
         if (user.emailConfirmation.isConfirmed) return false;
@@ -69,12 +82,16 @@ export class AuthService {
             const mappedCode = code.split(":").map(el => atob(el));
             return {
                 confirmationCode: mappedCode[0],
-                userLogin: mappedCode[1],
+                userEmail: mappedCode[1],
                 expirationDate: mappedCode[2]
             }
         } catch (err){
             return null
         }
-        }
+    }
 
+    static _createConfirmationCode(email: string) {
+        const confirmationCodeExpiration = add(new Date, {minutes: 580}).toISOString()
+        return `${btoa(uuidv4())}:${btoa(email)}:${btoa(confirmationCodeExpiration)}`
+    }
 }

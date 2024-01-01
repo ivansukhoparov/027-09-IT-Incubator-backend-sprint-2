@@ -1,4 +1,4 @@
-import {UserOutputAuthType, UserOutputType, UserType} from "../types/users/output";
+import {UserOutputType, UserType} from "../types/users/output";
 import {usersCollection} from "../db/db-collections";
 import {ObjectId} from "mongodb";
 import {userMapper, userMapperAuth} from "../types/users/mapper";
@@ -29,13 +29,32 @@ export class UsersRepository {
         }
     }
 
-    static async getUserByCustomKey(field: string, value:string) {
+    static async getUserByCustomKey(filterKey: string, filterValue: string) {
         try {
-            const user = await usersCollection.findOne({[field]: value});
+            let filter = {};
+            if (filterKey === "id") filter = {_id: new ObjectId(filterValue)};
+            else filter = {[filterKey]: filterValue};
+
+            const user = await usersCollection.findOne(filter);
             if (!user) return null;
             return userMapperAuth(user);
         } catch (err) {
             return null;
+        }
+    }
+
+
+
+    static async updateUserCustomFields(filterKey: string, filterValue: string, updateData: UserType) {
+        try {
+            let filter = {};
+            if (filterKey === "id") filter = {_id: new ObjectId(filterValue)};
+            else filter = {[filterKey]: filterValue};
+
+            const isUpdated = await usersCollection.updateOne({filter}, {$set: updateData});
+            return isUpdated.matchedCount === 1;
+        } catch (err) {
+            return false
         }
     }
 

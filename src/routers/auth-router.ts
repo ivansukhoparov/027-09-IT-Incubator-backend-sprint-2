@@ -1,6 +1,11 @@
 import {Request, Response, Router} from "express";
-import {RequestWithBody, RequestWithSearchTerms} from "../types/common";
-import {AuthType, EmailConfirmationCode, RegistrationInfoType} from "../types/auth/input";
+import {RequestWithBody} from "../types/common";
+import {
+    AuthType,
+    EmailConfirmationCodeResendRequestType,
+    EmailConfirmationCodeType,
+    RegistrationInfoType
+} from "../types/auth/input";
 import {AuthService} from "../domains/auth-service";
 import {HTTP_STATUSES} from "../utils/comon";
 import {loginValidationChain} from "../middlewares/validators/auth-validators";
@@ -51,7 +56,7 @@ authRouter.post("/registration",
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 })
 
-authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailConfirmationCode>, res: Response) => {
+authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailConfirmationCodeType>, res: Response) => {
     const isConfirm = await AuthService.confirmEmail(req.body.code);
     if (!isConfirm) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
@@ -65,7 +70,14 @@ authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailC
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 })
 
-authRouter.post("/registration-email-resending", async (req: Request, res: Response) => {
+authRouter.post("/registration-email-resending",
+    async (req: RequestWithBody<EmailConfirmationCodeResendRequestType>, res: Response) => {
+        const isSendNewCode = await AuthService.refreshEmailConfirmationCode(req.body.email);
+        if (!isSendNewCode) {
+            res.status(HTTP_STATUSES.SERVER_ERROR_500);
+            return;
+        }
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 
 })
 
