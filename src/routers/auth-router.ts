@@ -72,13 +72,13 @@ authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailC
 
 authRouter.post("/registration-email-resending",
     async (req: RequestWithBody<EmailConfirmationCodeResendRequestType>, res: Response) => {
-
+/*
         const isSendNewCode = await AuthService.refreshEmailConfirmationCode(req.body.email);
         if (!isSendNewCode) {
             res.status(HTTP_STATUSES.SERVER_ERROR_500);
             return;
         }
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
-
+*/
 })
 
