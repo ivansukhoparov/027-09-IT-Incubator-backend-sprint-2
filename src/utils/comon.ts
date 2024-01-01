@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const mongoUri = process.env.MONGO_URL
+export const mongoUri = process.env.MONGO_URL!
 
 // localDB
 //export const mongoUri = "mongodb://0.0.0.0:27017"
