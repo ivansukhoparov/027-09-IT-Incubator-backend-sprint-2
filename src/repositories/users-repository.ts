@@ -29,6 +29,16 @@ export class UsersRepository {
         }
     }
 
+    static async getUserByCustomKey(field: string, value:string) {
+        try {
+            const user = await usersCollection.findOne({[field]: value});
+            if (!user) return null;
+            return userMapperAuth(user);
+        } catch (err) {
+            return null;
+        }
+    }
+
     static async createUser(createData: UserType): Promise<string | null> {
         try {
             const result = await usersCollection.insertOne(createData);
