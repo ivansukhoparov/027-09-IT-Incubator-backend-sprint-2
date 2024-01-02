@@ -2,11 +2,27 @@ import request = require("supertest");
 import {app} from "../../src/settings";
 import {ErrorsMessageType, ErrorType} from "../../src/types/common";
 import {UsersRepository} from "../../src/repositories/users-repository";
-const router = "/auth"
-const routerRegistration = "/auth/registration"
-const routerResend = "/auth/registration"
-const routerConfirmation = "/auth/registration"
-const errorMessages = (...fields: any) => {
+import {AuthService} from "../../src/domains/auth-service";
+import {usersCollection} from "../../src/db/db-collections";
+
+const routers = {
+    main: "/auth",
+    registration: "/auth/registration/",
+    confirmation: "/auth/registration-confirmation",
+    resend: "/auth/registration-email-resending"
+}
+
+/*
+const createRouters = (main: string, ...seconds: any) => {
+    const routers: {} = seconds.map((el: any) => el.toString()).reduce((acc: {}, el: string) => {
+        acc[el] = "/" + el;
+        return acc
+    }, {main: "/" + main});
+    return routers
+}
+*/
+
+const createErrorMessages = (...fields: any) => {
     const errors: ErrorType = {errorsMessages: []}
     fields.forEach((field: any) => {
         const errorsMessage: ErrorsMessageType = {
@@ -16,6 +32,16 @@ const errorMessages = (...fields: any) => {
         errors.errorsMessages.push(errorsMessage);
     })
     return errors;
+}
+
+const invalidConfirmation = {
+    request: {code: "lrjavjlrbpiaeruvblaerhvblrhvblerhvbaerjibvlarhebvlhbevlhbvr"},
+    responseCode: 400,
+    response: createErrorMessages("code")
+}
+const validConfirmation = {
+    responseCode: 204,
+    response: {}
 }
 
 const testDataUsers = {
@@ -49,12 +75,12 @@ const testDataUsers = {
             "password": "",
             "email": ""
         },
-        response: errorMessages("login", "email","password"),
+        response: createErrorMessages("login", "email", "password"),
         responseCode: 400
     },
     emptyRequest: {
         request: {},
-        response: errorMessages("login", "email","password"),
+        response: createErrorMessages("login", "email", "password"),
         responseCode: 400
     },
     longFields: {
@@ -63,7 +89,7 @@ const testDataUsers = {
             "password": "123456789012345678901",
             "email": "rbcdaaa@gmail.com"
         },
-        response: errorMessages("login", "password"),
+        response: createErrorMessages("login", "password"),
         responseCode: 400
     },
     shortFields: {
@@ -72,7 +98,7 @@ const testDataUsers = {
             "password": "qwerq",
             "email": "rbcdaaa@gmail.com"
         },
-        response: errorMessages("login", "password"),
+        response: createErrorMessages("login", "password"),
         responseCode: 400
     },
     notEmailField: {
@@ -81,7 +107,7 @@ const testDataUsers = {
             "password": "qweasd",
             "email": "www.fra.sdd"
         },
-        response: errorMessages( "email"),
+        response: createErrorMessages("email"),
         responseCode: 400
     },
     alreadyExistLogin: {
@@ -90,7 +116,7 @@ const testDataUsers = {
             "password": "qweasd",
             "email": "79117917524@yandex.ru"
         },
-        response: errorMessages("login"),
+        response: createErrorMessages("login"),
         responseCode: 400
     },
     alreadyExistEmail: {
@@ -99,28 +125,29 @@ const testDataUsers = {
             "password": "qweasd",
             "email": "rbcdaaa@gmail.com"
         },
-        response: errorMessages("email"),
+        response: createErrorMessages("email"),
         responseCode: 400
     },
 }
 
 
-describe(router, () => {
+describe(routers.main, () => {
+
     beforeAll(async () => {
         // Delete add data before tests
         await request(app).delete("/testing/all-data");
     });
-it (" - user registration with empty request should return 400 and errors messages", async () =>{
-    const res = await request(app).
-    post(routerRegistration).
+
+    it(" - user registration with empty request should return 400 and errors messages", async () => {
+        const res = await request(app).post(routers.registration).
     send(testDataUsers.emptyRequest.request).
     expect(testDataUsers.emptyRequest.responseCode);
 
     expect(res.body).toEqual(testDataUsers.emptyRequest.response);
-})
+    })
+
     it (" - user registration with empty fields should return 400 and errors messages", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.emptyFields.request).
         expect(testDataUsers.emptyFields.responseCode);
 
@@ -128,8 +155,7 @@ it (" - user registration with empty request should return 400 and errors messag
     })
 
     it (" - user registration with too long login and email should return 400 and errors messages", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.longFields.request).
         expect(testDataUsers.longFields.responseCode);
 
@@ -137,8 +163,7 @@ it (" - user registration with empty request should return 400 and errors messag
     })
 
     it (" - user registration with too short login and email  data should return 400 and errors messages", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.shortFields.request).
         expect(testDataUsers.shortFields.responseCode);
 
@@ -146,8 +171,7 @@ it (" - user registration with empty request should return 400 and errors messag
     })
 
     it (" - user registration with invalid email  data should return 400 and errors messages", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.notEmailField.request).
         expect(testDataUsers.notEmailField.responseCode);
 
@@ -155,8 +179,7 @@ it (" - user registration with empty request should return 400 and errors messag
     })
 
     it (" + user registration with valid request should return 204 and code to email", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.valid_1.request).
         expect(testDataUsers.valid_1.responseCode);
 
@@ -168,9 +191,8 @@ it (" - user registration with empty request should return 400 and errors messag
         console.log(testDataUsers.valid_1.confirmationCode_1)
     })
 
-    it (" + user registration second user with valid request should return 204 and code to email", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+    it(" + user registration of second user with valid request should return 204 and code to email", async () => {
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.valid_2.request).
         expect(testDataUsers.valid_2.responseCode);
 
@@ -183,8 +205,7 @@ it (" - user registration with empty request should return 400 and errors messag
     })
 
     it (" - user registration with existing login should return 400 and errors messages", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.alreadyExistLogin.request).
         expect(testDataUsers.alreadyExistLogin.responseCode);
 
@@ -192,13 +213,95 @@ it (" - user registration with empty request should return 400 and errors messag
     })
 
     it (" - user registration with existing email should return 400 and errors messages", async () =>{
-        const res = await request(app).
-        post(routerRegistration).
+        const res = await request(app).post(routers.registration).
         send(testDataUsers.alreadyExistEmail.request).
         expect(testDataUsers.alreadyExistEmail.responseCode);
 
         expect(res.body).toEqual(testDataUsers.alreadyExistEmail.response);
     })
 
+    it(" - confirmation with invalid code for user_1 must return 400 and error message", async () => {
+        const res = await request(app).post(routers.confirmation).send(invalidConfirmation.request).expect(invalidConfirmation.responseCode);
+
+        expect(res.body).toEqual(invalidConfirmation.response);
+    })
+
+    it(" + confirmation with valid code for user_1 must return 204 and empty body", async () => {
+        const res = await request(app).post(routers.confirmation).send(testDataUsers.valid_1.confirmationCode_1).expect(validConfirmation.responseCode);
+
+        expect(res.body).toEqual(validConfirmation.response);
+
+        const user_1 = await UsersRepository.getUserByLoginOrEmail(testDataUsers.valid_1.request.login);
+        expect(user_1!.emailConfirmation.isConfirmed).toBe(true);
+        console.log(user_1!.emailConfirmation.isConfirmed)
+    })
+
+    it(" - confirmation with valid code for confirmed user_1 must return 400 and error message", async () => {
+        const res = await request(app).post(routers.confirmation).send(testDataUsers.valid_1.confirmationCode_1).expect(invalidConfirmation.responseCode);
+
+        expect(res.body).toEqual(invalidConfirmation.response);
+    })
+
+    it(" - confirmation with expired valid code for confirmed user_2 must return 400 and error message", async () => {
+        // create new confirmation code with living time 1 sec
+        const newCode = AuthService._createConfirmationCode(testDataUsers.valid_2.request.email, {seconds: 1});
+
+        // write it to db
+        await usersCollection.updateOne({login: testDataUsers.valid_2.request.login}, {$set: {"emailConfirmation.confirmationCode": newCode}});
+
+        //await 3 seconds
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const res = await request(app)
+            .post(routers.confirmation)
+            .send({code: newCode})
+            .expect(invalidConfirmation.responseCode);
+
+        expect(res.body).toEqual(invalidConfirmation.response);
+    })
+
+    it(" - request to resend code with invalid data must return 400 and error message", async () => {
+        const res = await request(app).post(routers.resend).send({email: "12345"}).expect(400);
+        expect(res.body).toEqual(createErrorMessages("email"));
+    })
+
+    it(" - request to resend code with not registered email must return 400 and error message", async () => {
+        const res = await request(app).post(routers.resend).send({email: "gggg@gmail.gom"}).expect(400);
+        expect(res.body).toEqual(createErrorMessages("email"));
+    })
+    it(" - request to resend code for confirmed user must return 400 and error message", async () => {
+        const res = await request(app).post(routers.resend).send({email: testDataUsers.valid_1.request.email}).expect(400);
+        expect(res.body).toEqual(createErrorMessages("email"));
+    })
+
+    it(" + request with valid data and for not confined user must return 204 and update code in db", async () => {
+        const res = await request(app).post(routers.resend).send({email: testDataUsers.valid_2.request.email}).expect(204);
+
+        expect(res.body).toEqual({});
+        const user_2 = await UsersRepository.getUserByLoginOrEmail(testDataUsers.valid_2.request.login)
+        expect(user_2).not.toBeNull()
+        testDataUsers.valid_2.confirmationCode_2 = {code: user_2!.emailConfirmation.confirmationCode};
+        expect(user_2!.emailConfirmation.isConfirmed).toBe(false);
+        console.log(testDataUsers.valid_2.confirmationCode_1)
+    })
+
+    /*
+    it(" - user can't login without email confirmation (user_2)", async () => {
+
+     })
+     it(" + user can login with email confirmation (user_1)", async () => {
+
+     })
+     */
+
+    it(" + confirmation with resent code for user_2 must return 204 and empty body", async () => {
+        const res = await request(app).post(routers.confirmation).send(testDataUsers.valid_2.confirmationCode_2).expect(validConfirmation.responseCode);
+
+        expect(res.body).toEqual(validConfirmation.response);
+
+        const user_2 = await UsersRepository.getUserByLoginOrEmail(testDataUsers.valid_2.request.login);
+        expect(user_2!.emailConfirmation.isConfirmed).toBe(true);
+        console.log(user_2!.emailConfirmation.isConfirmed)
+    })
 
 })
