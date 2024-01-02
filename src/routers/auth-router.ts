@@ -11,7 +11,11 @@ import {HTTP_STATUSES} from "../utils/comon";
 import {loginValidationChain} from "../middlewares/validators/auth-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
-import {registrationValidationChain, uniqueLoginOrEmail} from "../middlewares/validators/registration-validator";
+import {
+    isEmailConfirmed,
+    registrationValidationChain,
+    uniqueLoginOrEmail
+} from "../middlewares/validators/registration-validator";
 
 
 export const authRouter=Router();
@@ -25,7 +29,10 @@ authRouter.get("/me", bearerAuthorizationMiddleware, async (req: Request, res: R
     res.status(HTTP_STATUSES.OK_200).json(user);
 })
 
-authRouter.post("/login", loginValidationChain(), inputValidationMiddleware, async (req: RequestWithBody<AuthType>, res: Response) => {
+authRouter.post("/login",
+    loginValidationChain(),
+    inputValidationMiddleware,
+    async (req: RequestWithBody<AuthType>, res: Response) => {
     const authData:AuthType = {
         loginOrEmail:req.body.loginOrEmail,
         password:req.body.password
@@ -45,7 +52,6 @@ authRouter.post("/registration",
     registrationValidationChain(),
     uniqueLoginOrEmail,
     inputValidationMiddleware,
-
     async (req: RequestWithBody<RegistrationInfoType>, res: Response) => {
 
     const isSuccessful = await AuthService.registerUser(req.body.login, req.body.email, req.body.password);
@@ -56,7 +62,8 @@ authRouter.post("/registration",
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 })
 
-authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailConfirmationCodeType>, res: Response) => {
+authRouter.post("/registration-confirmation",
+    async (req: RequestWithBody<EmailConfirmationCodeType>, res: Response) => {
     const isConfirm = await AuthService.confirmEmail(req.body.code);
     if (!isConfirm) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
@@ -71,6 +78,7 @@ authRouter.post("/registration-confirmation", async (req: RequestWithBody<EmailC
 })
 
 authRouter.post("/registration-email-resending",
+    isEmailConfirmed,
     async (req: RequestWithBody<EmailConfirmationCodeResendRequestType>, res: Response) => {
 
         const isSendNewCode = await AuthService.refreshEmailConfirmationCode(req.body.email);

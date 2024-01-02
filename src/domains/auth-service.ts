@@ -62,6 +62,7 @@ export class AuthService {
 
         const receiptedCode = this._confirmationCodeToData(confirmationCode);
         if (!receiptedCode) return false;
+
         const user = await UsersRepository.getUserByLoginOrEmail(receiptedCode.userEmail)
 
         if (!user) return false;

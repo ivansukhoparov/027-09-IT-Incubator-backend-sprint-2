@@ -39,6 +39,7 @@ export class UsersDomain {
            return false
        }
     }
+
     static async updateUserEmailConfirmationCode (email:string, code:string){
         try {
             const isUpdated = await usersCollection.updateOne({email: email}, {$set: {"emailConfirmation.confirmationCode": code}});
@@ -47,6 +48,7 @@ export class UsersDomain {
             return false
         }
     }
+
     static async updateUserCustomFields(filterKey: string, filterValue: string, updateData: UserUpdateType) {
         const user = await UsersRepository.getUserByCustomKey(filterKey, filterValue);
         if (!user) return false;
