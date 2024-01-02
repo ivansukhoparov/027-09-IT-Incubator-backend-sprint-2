@@ -9,7 +9,6 @@ import {EmailAdapter} from "../adapters/email-adapter";
 import {add} from "date-fns/add";
 import {btoa} from "buffer";
 import {v4 as uuidv4} from "uuid";
-import {UserUpdateType} from "../types/users/input";
 
 dotenv.config();
 debugger;
@@ -91,8 +90,8 @@ export class AuthService {
         }
     }
 
-    static _createConfirmationCode(email: string) {
-        const confirmationCodeExpiration = add(new Date, {minutes: 580}).toISOString()
+    static _createConfirmationCode(email: string, lifeTime: {} = {hours: 48}) {
+        const confirmationCodeExpiration = add(new Date, lifeTime).toISOString()
         return `${btoa(uuidv4())}:${btoa(email)}:${btoa(confirmationCodeExpiration)}`
     }
 }
