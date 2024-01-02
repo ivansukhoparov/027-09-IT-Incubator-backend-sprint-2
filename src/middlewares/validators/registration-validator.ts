@@ -9,7 +9,7 @@ import {UsersRepository} from "../../repositories/users-repository";
 
 
 const loginValidator = body("login").trim().isString().notEmpty().isLength({min:3, max:10}).matches(/^[a-zA-Z0-9_-]*$/);
-const emailValidator= body("email").trim().notEmpty().isString().isLength({min:5, max:100});
+const emailValidator= body("email").trim().notEmpty().isString().isLength({min:5, max:100}).isEmail();
 const passwordValidator = body("password").trim().notEmpty().isString().isLength({min:6, max:20});
 export const uniqueLoginOrEmail = async (req: RequestWithBody<RegistrationInfoType>, res:Response, next:NextFunction)=>{
     const userByLogin = await UsersRepository.getUserByLoginOrEmail(req.body.login);
