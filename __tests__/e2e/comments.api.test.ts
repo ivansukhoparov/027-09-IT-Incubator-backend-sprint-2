@@ -13,7 +13,7 @@ interface ITestUserType extends UserOutputType {
     accessToken?: string
 }
 
-const routerName = "/comments/"
+
 
 const createTestUsers: Array<CreateUserType> = [
     {
@@ -79,6 +79,7 @@ const testCommentsData = {
 
 }
 
+const routerName = "/comments/"
 const errorMessage = (field?: string) => {
     return {
         errorsMessages: [
