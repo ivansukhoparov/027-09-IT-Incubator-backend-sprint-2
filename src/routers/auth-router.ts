@@ -48,6 +48,11 @@ authRouter.post("/login",
 
 })
 
+authRouter.post("/logout",
+    async (req: Request, res: Response) => {
+
+    })
+
 authRouter.post("/registration",
     registrationValidationChain(),
     uniqueLoginOrEmail,
@@ -90,3 +95,7 @@ authRouter.post("/registration-email-resending",
 
 })
 
+authRouter.post("/refresh-token",
+    async (req: Request, res: Response) => {
+
+    })
