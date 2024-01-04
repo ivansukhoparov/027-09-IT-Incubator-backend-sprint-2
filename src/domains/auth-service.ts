@@ -16,14 +16,18 @@ const secretKey = "qwerty"
 export class AuthService {
     static async loginUser(loginOrEmail: string, password: string): Promise<AuthOutputType | null> {
         const user:UserOutputAuthType|null = await UsersRepository.getUserByLoginOrEmail(loginOrEmail);
+
         if (!user) return null;
 
         const isSuccess = await bcrypt.compare(password, user.hash);
+
         if (!isSuccess) return null;
 
-        const token = jwt.sign({userId: user.id}, secretKey, {expiresIn: "1d"});
+        const accessToken = jwt.sign({userId: user.id}, secretKey, {expiresIn: "20h"});
+      //  const refreshToken = jwt.sign({userId: user.id}, secretKey, {expiresIn: "10s"});
 
-        return {accessToken: token}
+        return {accessToken: accessToken}
+
     }
 
     static async getUserIdByToken(token:string):Promise<string|null>{

@@ -7,11 +7,12 @@ import {authRouter} from "./routers/auth-router";
 import {usersRouter} from "./routers/users-router";
 import {commentsRouter} from "./routers/comments-router";
 import cookieParser from "cookie-parser";
-
+import cors from "cors";
 export const app = express();
 
 app.use(express.json());
-app.use(cookieParser())
+app.use(cors());
+app.use(cookieParser());
 
 app.use("/testing", testingRouter);
 
@@ -27,7 +28,7 @@ app.post('/auth/example', (req: Request, res: Response) => {
     res.cookie('cookie_name', "htis is cookei! HA!", {httpOnly: true,secure: true})
     res.status(204).send('Hello samurai from it-incubator!!!')
 })
-app.get('/auth/result', async (req: Request, res: Response) => {
+app.get('/auth/result',  (req: Request, res: Response) => {
     const cookie_name= req.cookies
-    res.status(200).json(cookie_name)
+    res.status(200).json(req.cookies)
 })

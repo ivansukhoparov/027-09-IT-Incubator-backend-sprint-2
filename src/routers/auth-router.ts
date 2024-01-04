@@ -33,18 +33,22 @@ authRouter.post("/login",
     loginValidationChain(),
     inputValidationMiddleware,
     async (req: RequestWithBody<AuthType>, res: Response) => {
-    const authData:AuthType = {
+
+        const authData: AuthType =
+            {
         loginOrEmail:req.body.loginOrEmail,
         password:req.body.password
-    }
-    const accessToken = await AuthService.loginUser(authData.loginOrEmail, authData.password);
+            };
 
+    const accessToken = await AuthService.loginUser(authData.loginOrEmail, authData.password);
     if (!accessToken) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
         return
     }
 
-    res.status(HTTP_STATUSES.OK_200).json(accessToken);
+
+        res.cookie('rt', "14", {maxAge: 9000000, httpOnly: true, secure: true})
+        res.status(HTTP_STATUSES.OK_200).json(accessToken);
 
 })
 
