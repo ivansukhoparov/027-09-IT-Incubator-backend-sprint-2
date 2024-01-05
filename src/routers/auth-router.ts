@@ -1,7 +1,6 @@
 import {Request, Response, Router} from "express";
 import {RequestWithBody} from "../types/common";
 import {
-    AuthType,
     EmailConfirmationCodeResendRequestType,
     EmailConfirmationCodeType,
     RegistrationInfoType
@@ -16,7 +15,6 @@ import {
     registrationValidationChain,
     uniqueLoginOrEmail
 } from "../middlewares/validators/registration-validator";
-
 
 export const authRouter=Router();
 
@@ -34,23 +32,15 @@ authRouter.post("/login",
     inputValidationMiddleware,
     async (req: Request ,res: Response) => {
 
-        const authData: AuthType = {
-        loginOrEmail:req.body.loginOrEmail,
-        password:req.body.password
-    }
-    const accessToken = await AuthService.loginUser(authData.loginOrEmail, authData.password);
+        const tokens = await AuthService.loginUser(req.body.loginOrEmail, req.body.password);
 
-    if (!accessToken) {
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-        return
-    }
-    console.log(req.cookies)
-        if (req.cookies.rt === "14") {
-            res.status(200).json("already")
+        if (!tokens) {
+            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
             return
         }
-        res.cookie('rt', "14", {maxAge: 9000000 ,httpOnly: false, secure: false})
-        res.setHeader("Access-Control-Allow-Origin",       " http://localhost:63342").status(HTTP_STATUSES.OK_200).json(accessToken);
+
+        res.cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
+        res.status(HTTP_STATUSES.OK_200).json({accessToken: tokens.accessToken});
 
 })
 

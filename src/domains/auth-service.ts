@@ -9,30 +9,36 @@ import {EmailAdapter} from "../adapters/email-adapter";
 import {add} from "date-fns/add";
 import {btoa} from "buffer";
 import {v4 as uuidv4} from "uuid";
+import {RefreshTokenRepositoty} from "../repositories/refresh-token-repositoty";
 
 dotenv.config();
-debugger;
-const secretKey = "qwerty"
-export class AuthService {
-    static async loginUser(loginOrEmail: string, password: string): Promise<AuthOutputType | null> {
-        const user:UserOutputAuthType|null = await UsersRepository.getUserByLoginOrEmail(loginOrEmail);
 
+const secretKey = {
+    accessToken: process.env.ACCESS_TOKEN_SECRET_KEY!,
+    refreshToken: process.env.ACCESS_TOKEN_SECRET_KEY!
+};
+
+export class AuthService {
+
+    static async loginUser(loginOrEmail: string, password: string): Promise<AuthOutputType | null> {
+
+        const user:UserOutputAuthType|null = await UsersRepository.getUserByLoginOrEmail(loginOrEmail);
         if (!user) return null;
 
         const isSuccess = await bcrypt.compare(password, user.hash);
-
         if (!isSuccess) return null;
 
-        const accessToken = jwt.sign({userId: user.id}, secretKey, {expiresIn: "20h"});
-      //  const refreshToken = jwt.sign({userId: user.id}, secretKey, {expiresIn: "10s"});
-
-        return {accessToken: accessToken}
+        const accessToken = this._createNewAccessToken(user.id);
+        const refreshToken = this._createNewRefreshToken(user.id);
+        return {accessToken: accessToken,refreshToken: refreshToken}
 
     }
 
+
+
     static async getUserIdByToken(token:string):Promise<string|null>{
         try {
-            const result:any = jwt.verify(token, secretKey);
+            const result:any = jwt.verify(token, secretKey.accessToken);
             return result.userId
         }catch (err){
             return null
@@ -98,4 +104,12 @@ export class AuthService {
         const confirmationCodeExpiration = add(new Date, lifeTime).toISOString()
         return `${btoa(uuidv4())}:${btoa(email)}:${btoa(confirmationCodeExpiration)}`
     }
+
+    static _createNewAccessToken(userId:string){
+        return jwt.sign({userId:userId}, secretKey.accessToken, {expiresIn: "10s"});
+    }
+    static  _createNewRefreshToken(userId:string){
+        return jwt.sign({userId:userId}, secretKey.refreshToken, {expiresIn: "20s"});
+    }
+
 }
