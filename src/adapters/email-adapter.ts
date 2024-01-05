@@ -29,12 +29,12 @@ export class EmailAdapter {
                     cc: "79117917524@yandex.ru",
                     to: mailTo,
                 });
-            console.log("email sent");
-            console.log(sentEmailInfo);
+            //  console.log("email sent");
+            //  console.log(sentEmailInfo);
             return true;
         } catch (err) {
-            console.log("email don't sent");
-            console.log(err);
+            //   console.log("email don't sent");
+            //   console.log(err);
             return false;
         }
 
