@@ -10,7 +10,7 @@ import {UsersQueryRepository} from "../repositories/users-query-repository";
 import {UserOutputType} from "../types/users/output";
 import {UsersDomain} from "../domains/users-domain";
 import {HTTP_STATUSES} from "../utils/comon";
-import {basicAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {AuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {usersValidationChain} from "../middlewares/validators/users-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {UsersRepository} from "../repositories/users-repository";
@@ -36,7 +36,7 @@ usersRouter.get("/", async (req: RequestWithSearchTerms<QueryUsersRequestType>, 
     res.json(users)
 })
 
-usersRouter.post("/", basicAuthorizationMiddleware, usersValidationChain(),inputValidationMiddleware,  async (req:RequestWithBody<CreateUserType>, res:Response)=>{
+usersRouter.post("/", AuthorizationMiddleware, usersValidationChain(),inputValidationMiddleware,  async (req:RequestWithBody<CreateUserType>, res:Response)=>{
 
     const createdUser: UserOutputType | null = await UsersDomain.createUser(req.body.login, req.body.email, req.body.password, true);
     if (!createdUser) {
@@ -46,7 +46,7 @@ usersRouter.post("/", basicAuthorizationMiddleware, usersValidationChain(),input
     res.status(HTTP_STATUSES.CREATED_201).json(createdUser);
 })
 
-usersRouter.delete("/:id",basicAuthorizationMiddleware, async (req: RequestWithParams<Params>, res: Response) => {
+usersRouter.delete("/:id",AuthorizationMiddleware, async (req: RequestWithParams<Params>, res: Response) => {
     const isDeleted = await UsersRepository.deleteUser(req.params.id);
     if (!isDeleted) res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
     else res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

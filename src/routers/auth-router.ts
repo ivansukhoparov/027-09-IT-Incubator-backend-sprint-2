@@ -10,7 +10,7 @@ import {AuthService} from "../domains/auth-service";
 import {HTTP_STATUSES} from "../utils/comon";
 import {loginValidationChain} from "../middlewares/validators/auth-validators";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
-import {bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {AuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {
     isEmailConfirmed,
     registrationValidationChain,
@@ -20,7 +20,7 @@ import {
 
 export const authRouter=Router();
 
-authRouter.get("/me", bearerAuthorizationMiddleware, async (req: Request, res: Response) => {
+authRouter.get("/me", AuthorizationMiddleware, async (req: Request, res: Response) => {
     const user = {
         login: req.user!.login,
         email: req.user!.email,
@@ -55,6 +55,11 @@ authRouter.post("/login",
 })
 
 authRouter.post("/logout",
+    async (req: Request, res: Response) => {
+
+    })
+
+authRouter.post("/refresh-token",
     async (req: Request, res: Response) => {
 
     })
@@ -101,7 +106,4 @@ authRouter.post("/registration-email-resending",
 
 })
 
-authRouter.post("/refresh-token",
-    async (req: Request, res: Response) => {
 
-    })

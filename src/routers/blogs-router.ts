@@ -16,7 +16,7 @@ import {
 } from "../types/blogs/input";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
 import {validationBlogsChains} from "../middlewares/validators/blogs-validators";
-import {basicAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {AuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {HTTP_STATUSES} from "../utils/comon";
 import {BlogsQueryRepository} from "../repositories/blogs-query-repository";
 import {validationPostsChainsNoBlogId} from "../middlewares/validators/posts-validators";
@@ -79,7 +79,7 @@ blogsRouter.get("/:id/posts", async (req: RequestWithSearchTermsAndParams<Params
 })
 
 blogsRouter.post('/',
-    basicAuthorizationMiddleware,
+    AuthorizationMiddleware,
     validationBlogsChains(),
     inputValidationMiddleware,
     async (req: RequestWithBody<CreateBlogDto>, res: Response) => {
@@ -94,7 +94,7 @@ blogsRouter.post('/',
     })
 
 blogsRouter.post("/:id/posts",
-    basicAuthorizationMiddleware,
+    AuthorizationMiddleware,
     validationPostsChainsNoBlogId(),
     inputValidationMiddleware,
     async (req: RequestWithBodyAndParams<Params, CreatePostDto>, res: Response) => {
@@ -112,7 +112,7 @@ blogsRouter.post("/:id/posts",
     })
 
 blogsRouter.put("/:id",
-    basicAuthorizationMiddleware,
+    AuthorizationMiddleware,
     validationBlogsChains(),
     inputValidationMiddleware,
     async (req: RequestWithBodyAndParams<Params, UpdateBlogDto>, res: Response) => {
@@ -126,7 +126,7 @@ blogsRouter.put("/:id",
     })
 
 blogsRouter.delete("/:id",
-    basicAuthorizationMiddleware,
+    AuthorizationMiddleware,
     async (req: RequestWithParams<Params>, res: Response) => {
         const isDeleted = await BlogsRepository.deleteBlog(req.params.id);
         if (isDeleted) res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

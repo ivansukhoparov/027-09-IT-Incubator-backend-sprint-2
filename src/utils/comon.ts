@@ -22,3 +22,9 @@ export const HTTP_STATUSES = {
 
     SERVER_ERROR_500: 500
 }
+
+
+export const AUTH_METHODS={
+    base: "Basic",
+    bearer: "Bearer"
+}

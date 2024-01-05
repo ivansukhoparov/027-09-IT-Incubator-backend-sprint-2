@@ -7,7 +7,7 @@ import {
     RequestWithSearchTerms,
     RequestWithSearchTermsAndParams
 } from "../types/common";
-import {basicAuthorizationMiddleware, bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {AuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {HTTP_STATUSES} from "../utils/comon";
 import {PostsRepository} from "../repositories/posts-repository";
 import {CreatePostDto, QueryPostRequestType, SortPostRepositoryType, UpdatePostDto} from "../types/posts/input";
@@ -61,7 +61,7 @@ postsRouter.get("/:id", async (req: RequestWithParams<Params>, res: Response) =>
 })
 
 postsRouter.post('/',
-    basicAuthorizationMiddleware,
+    AuthorizationMiddleware,
     validationPostsChains(),
     inputValidationMiddleware,
     async (req: RequestWithBody<CreatePostDto>, res: Response) => {
@@ -79,7 +79,7 @@ postsRouter.post('/',
 })
 
 postsRouter.post("/:id/comments",
-    bearerAuthorizationMiddleware,
+    AuthorizationMiddleware,
     validatePost,
     validateComment,
     inputValidationMiddleware,
@@ -98,7 +98,7 @@ postsRouter.post("/:id/comments",
     res.status(HTTP_STATUSES.CREATED_201).json(comment);
 })
 
-postsRouter.put("/:id", basicAuthorizationMiddleware, validationPostsChains(), inputValidationMiddleware, async (req: RequestWithBodyAndParams<Params, UpdatePostDto>, res: Response) => {
+postsRouter.put("/:id", AuthorizationMiddleware, validationPostsChains(), inputValidationMiddleware, async (req: RequestWithBodyAndParams<Params, UpdatePostDto>, res: Response) => {
     const updateData = req.body;
     const isUpdated = await PostsRepository.updatePost(req.params.id, updateData);
     if (isUpdated) {
@@ -108,7 +108,7 @@ postsRouter.put("/:id", basicAuthorizationMiddleware, validationPostsChains(), i
     res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
 })
 
-postsRouter.delete("/:id", basicAuthorizationMiddleware, async (req: RequestWithParams<Params>, res: Response) => {
+postsRouter.delete("/:id", AuthorizationMiddleware, async (req: RequestWithParams<Params>, res: Response) => {
     const isDeleted = await PostsRepository.deletePost(req.params.id);
     if (isDeleted) res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     else res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);

@@ -3,7 +3,7 @@ import {Params, RequestWithBodyAndParams, RequestWithParams} from "../types/comm
 import {CommentsQueryRepository} from "../repositories/comments-query-repository";
 import {HTTP_STATUSES} from "../utils/comon";
 import {CommentsRepository} from "../repositories/comments-repository";
-import {accessRight, bearerAuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
+import {accessRight, AuthorizationMiddleware} from "../middlewares/auth/auth-middleware";
 import {UpdateCommentDto} from "../types/comments/input";
 import {validateComment} from "../middlewares/validators/comments-validator";
 import {inputValidationMiddleware} from "../middlewares/validators/input-validation-middleware";
@@ -21,7 +21,7 @@ commentsRouter.get("/:id", async (req: RequestWithParams<Params>, res: Response)
 })
 
 commentsRouter.put("/:id",
-    bearerAuthorizationMiddleware,
+    AuthorizationMiddleware,
     accessRight,
     validateComment,
     inputValidationMiddleware,
@@ -39,7 +39,7 @@ commentsRouter.put("/:id",
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
     })
 
-commentsRouter.delete("/:id", bearerAuthorizationMiddleware, accessRight, async (req: RequestWithParams<Params>, res: Response) => {
+commentsRouter.delete("/:id", AuthorizationMiddleware, accessRight, async (req: RequestWithParams<Params>, res: Response) => {
     const isDeleted = await CommentsRepository.deleteCommentById(req.params.id);
     if (isDeleted === null) {
         res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
