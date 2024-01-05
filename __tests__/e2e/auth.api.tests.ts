@@ -1,5 +1,5 @@
 import request = require("supertest");
-import {app} from "../../src/settings";
+import {app} from "../../src/app";
 import {ErrorsMessageType, ErrorType} from "../../src/types/common";
 import {UsersRepository} from "../../src/repositories/users-repository";
 import {AuthService} from "../../src/domains/auth-service";

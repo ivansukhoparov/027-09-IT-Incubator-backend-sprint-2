@@ -1,6 +1,6 @@
 
 import request = require("supertest");
-import {app} from "../../src/settings";
+import {app} from "../../src/app";
 
 
 

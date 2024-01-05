@@ -1,5 +1,5 @@
 import request from "supertest"
-import {app} from "../../src/settings";
+import {app} from "../../src/app";
 import {HTTP_STATUSES} from "../../src/utils/comon";
 import {UserOutputType} from "../../src/types/users/output";
 

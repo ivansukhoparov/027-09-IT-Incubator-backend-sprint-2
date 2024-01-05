@@ -1,5 +1,5 @@
 import request = require("supertest");
-import {app} from "../../src/settings";
+import {app} from "../../src/app";
 import {CreateUserType} from "../../src/types/users/input";
 import {CreatePostDto} from "../../src/types/posts/input";
 import {UserOutputType} from "../../src/types/users/output";

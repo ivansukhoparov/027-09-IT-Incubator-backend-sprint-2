@@ -1,4 +1,4 @@
-import {app} from "./settings";
+import {app} from "./app";
 import {port} from "./utils/comon";
 import {runDB} from "./db/db";
 

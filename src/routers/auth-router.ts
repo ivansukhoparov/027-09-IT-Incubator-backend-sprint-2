@@ -32,23 +32,25 @@ authRouter.get("/me", bearerAuthorizationMiddleware, async (req: Request, res: R
 authRouter.post("/login",
     loginValidationChain(),
     inputValidationMiddleware,
-    async (req: RequestWithBody<AuthType>, res: Response) => {
+    async (req: Request ,res: Response) => {
 
-        const authData: AuthType =
-            {
+        const authData: AuthType = {
         loginOrEmail:req.body.loginOrEmail,
         password:req.body.password
-            };
-
+    }
     const accessToken = await AuthService.loginUser(authData.loginOrEmail, authData.password);
+
     if (!accessToken) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
         return
     }
-
-
-        res.cookie('rt', "14", {maxAge: 9000000, httpOnly: true, secure: true})
-        res.status(HTTP_STATUSES.OK_200).json(accessToken);
+    console.log(req.cookies)
+        if (req.cookies.rt === "14") {
+            res.status(200).json("already")
+            return
+        }
+        res.cookie('rt', "14", {maxAge: 9000000 ,httpOnly: false, secure: false})
+        res.setHeader("Access-Control-Allow-Origin",       " http://localhost:63342").status(HTTP_STATUSES.OK_200).json(accessToken);
 
 })
 

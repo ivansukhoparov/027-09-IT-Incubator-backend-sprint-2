@@ -1,5 +1,5 @@
 import request = require("supertest");
-import {app} from "../../src/settings";
+import {app} from "../../src/app";
 
 const routerName = "/blogs/";
 class Results {
