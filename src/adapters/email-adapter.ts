@@ -26,7 +26,6 @@ export class EmailAdapter {
                 {
                     ...emailMessage,
                     from: mailFrom,
-                    cc: "79117917524@yandex.ru",
                     to: mailTo,
                 });
             //  console.log("email sent");
