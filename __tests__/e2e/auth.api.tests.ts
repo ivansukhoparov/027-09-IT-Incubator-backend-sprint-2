@@ -188,7 +188,7 @@ describe(routers.main, () => {
         expect(user_1).not.toBeNull()
         testDataUsers.valid_1.confirmationCode_1 = {code: user_1!.emailConfirmation.confirmationCode};
         expect(user_1!.emailConfirmation.isConfirmed).toBe(false);
-        console.log(testDataUsers.valid_1.confirmationCode_1)
+
     })
 
     it(" + user registration of second user with valid request should return 204 and code to email", async () => {
@@ -201,7 +201,7 @@ describe(routers.main, () => {
         expect(user_2).not.toBeNull()
         testDataUsers.valid_2.confirmationCode_1 = {code: user_2!.emailConfirmation.confirmationCode};
         expect(user_2!.emailConfirmation.isConfirmed).toBe(false);
-        console.log(testDataUsers.valid_2.confirmationCode_1)
+
     })
 
     it (" - user registration with existing login should return 400 and errors messages", async () =>{
@@ -233,7 +233,7 @@ describe(routers.main, () => {
 
         const user_1 = await UsersRepository.getUserByLoginOrEmail(testDataUsers.valid_1.request.login);
         expect(user_1!.emailConfirmation.isConfirmed).toBe(true);
-        console.log(user_1!.emailConfirmation.isConfirmed)
+
     })
 
     it(" - confirmation with valid code for confirmed user_1 must return 400 and error message", async () => {
@@ -282,7 +282,7 @@ describe(routers.main, () => {
         expect(user_2).not.toBeNull()
         testDataUsers.valid_2.confirmationCode_2 = {code: user_2!.emailConfirmation.confirmationCode};
         expect(user_2!.emailConfirmation.isConfirmed).toBe(false);
-        console.log(testDataUsers.valid_2.confirmationCode_1)
+
     })
 
     /*
@@ -301,7 +301,7 @@ describe(routers.main, () => {
 
         const user_2 = await UsersRepository.getUserByLoginOrEmail(testDataUsers.valid_2.request.login);
         expect(user_2!.emailConfirmation.isConfirmed).toBe(true);
-        console.log(user_2!.emailConfirmation.isConfirmed)
+
     })
 
 })

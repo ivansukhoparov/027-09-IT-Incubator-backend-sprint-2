@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {btoa} from "buffer";
 import {AUTH_METHODS, HTTP_STATUSES} from "../../utils/comon";
-
 import {AuthService} from "../../domains/auth-service";
 import {UsersRepository} from "../../repositories/users-repository";
 import {CommentsQueryRepository} from "../../repositories/comments-query-repository";
@@ -9,9 +8,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const login = "admin"
-const password = "qwerty"
-const method = "Basic"
+const login = process.env.SUPERADMIN_LOGIN!;
+const password = process.env.SUPERADMIN_PASSWORD!;
 
 
 // basic
