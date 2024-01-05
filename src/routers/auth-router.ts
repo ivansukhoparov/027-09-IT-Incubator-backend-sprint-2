@@ -51,7 +51,14 @@ authRouter.post("/logout",
 
 authRouter.post("/refresh-token",
     async (req: Request, res: Response) => {
+        const tokens = await AuthService.refreshTokens(req.cookies.refreshToken);
+        if (!tokens) {
+            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+            return
+        }
 
+        res.cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
+        res.status(HTTP_STATUSES.OK_200).json({accessToken: tokens.accessToken});
     })
 
 authRouter.post("/registration",

@@ -1,3 +1,3 @@
 export type RefreshTokenDBType = {
-    userId: string
+    token: string
 }

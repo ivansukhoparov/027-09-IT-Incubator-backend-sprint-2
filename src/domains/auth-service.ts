@@ -9,7 +9,7 @@ import {EmailAdapter} from "../adapters/email-adapter";
 import {add} from "date-fns/add";
 import {btoa} from "buffer";
 import {v4 as uuidv4} from "uuid";
-import {RefreshTokenRepositoty} from "../repositories/refresh-token-repositoty";
+import {RefreshTokenRepository} from "../repositories/refresh-token-repository";
 
 dotenv.config();
 
@@ -34,7 +34,24 @@ export class AuthService {
 
     }
 
+    static async refreshTokens(oldRefreshToken: string): Promise<AuthOutputType|null> {
+        const isInWhiteList = await RefreshTokenRepository.checkToken(oldRefreshToken);
+        if (!isInWhiteList) {
+            return null
+        }
 
+        try {
+            const result:any = jwt.verify(oldRefreshToken, secretKey.accessToken);
+
+            const accessToken = this._createNewAccessToken(result.userId);
+            const refreshToken = this._createNewRefreshToken(result.userId);
+            return {accessToken: accessToken, refreshToken: refreshToken}
+        }catch (err){
+            return null
+        }
+
+
+    }
 
     static async getUserIdByToken(token:string):Promise<string|null>{
         try {
@@ -99,12 +116,10 @@ export class AuthService {
             return null
         }
     }
-
     static _createConfirmationCode(email: string, lifeTime: {} = {hours: 48}) {
         const confirmationCodeExpiration = add(new Date, lifeTime).toISOString()
         return `${btoa(uuidv4())}:${btoa(email)}:${btoa(confirmationCodeExpiration)}`
     }
-
     static _createNewAccessToken(userId:string){
         return jwt.sign({userId:userId}, secretKey.accessToken, {expiresIn: "10s"});
     }
